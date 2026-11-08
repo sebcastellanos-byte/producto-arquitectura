@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;background-color:#0d0e12;color:#e3e2e6;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-secondary-fixed-variant":"#604100","error-container":"#93000a","on-primary-fixed-variant":"#773300","surface-container-high":"#1e2027","surface":"#0d0e12","on-background":"#e3e2e6","error":"#ffb4ab","tertiary-fixed-dim":"#26dcdd","on-surface":"#e3e2e6","surface-container":"#16181d","on-secondary":"#432c00","secondary-fixed-dim":"#ffba38","surface-dim":"#0d0e12","on-secondary-fixed":"#281900","on-tertiary-fixed-variant":"#004f50","on-error":"#690005","primary":"#ffb68e","on-tertiary-fixed":"#002020","on-error-container":"#ffdad6","outline-variant":"#3d2f26","on-tertiary-container":"#003e3e","secondary-container":"#feb300","primary-fixed-dim":"#ffb68e","primary-fixed":"#ffdbca","on-tertiary":"#003737","surface-bright":"#2a2c35","on-primary":"#542200","tertiary-fixed":"#56f9f9","inverse-on-surface":"#2f3034","inverse-primary":"#9c4500","surface-container-highest":"#252830","surface-container-low":"#111317","secondary":"#ffd799","on-primary-container":"#5e2700","surface-variant":"#22242c","outline":"#877063","surface-container-lowest":"#0a0b0e","on-primary-fixed":"#331200","tertiary":"#26dcdd","inverse-surface":"#e3e2e6","secondary-fixed":"#ffdeac","on-secondary-container":"#6a4800","on-surface-variant":"#d4b2a3","surface-tint":"#ffb68e","background":"#0d0e12","primary-container":"#ff7a1a","tertiary-container":"#00b2b3"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"space-md":"1rem","margin":"2rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","gutter":"1.25rem","space-xl":"2.5rem","space-sm":"0.5rem","margin-mobile":"1rem","space-xs":"0.25rem"},"fontFamily":{"title-sm":["Space Grotesk"],"headline-sm":["Space Grotesk"],"headline-md":["Space Grotesk"],"label-metric":["JetBrains Mono"],"caption":["Space Grotesk"],"label-code":["JetBrains Mono"],"body-lg":["Space Grotesk"],"body-md":["Space Grotesk"],"display-xl-mobile":["Space Grotesk"],"body-sm":["Space Grotesk"],"headline-lg":["Space Grotesk"],"title-md":["Space Grotesk"],"headline-lg-mobile":["Space Grotesk"],"display-xl":["Space Grotesk"],"body-sm-alt":["Inter"],"label-sm":["JetBrains Mono"],"label-md":["JetBrains Mono"]},"fontSize":{"title-sm":["15px",{lineHeight:"22px",letterSpacing:"0.01em",fontWeight:"600"}],"headline-sm":["22px",{lineHeight:"30px",letterSpacing:"0em",fontWeight:"500"}],"headline-md":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-metric":["13px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"caption":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"400"}],"label-code":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"26px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["14px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"display-xl-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"400"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"600"}],"title-md":["18px",{lineHeight:"26px",letterSpacing:"0em",fontWeight:"500"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"500"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased select-none text-[#e3e2e6]"><header class="fixed top-0 left-0 right-0 h-14 bg-[#0a0b0e] border-b border-[#3d2f26]/60 z-50 flex items-center justify-between px-margin shadow-[0_4px_20px_rgba(0,0,0,0.8)]"><div class="flex items-center gap-space-md"><img alt="Trazo Mental Logo" class="h-8 w-auto object-contain brightness-110 drop-shadow-[0_0_8px_rgba(255,122,26,0.3)]" src="https://lh3.googleusercontent.com/aida/AEtjO1VmwuNkaUUhHW0T_odGJ-tCEnuSrrWQRO7DGzxLjn_ZjlCcPTvLiPS3aHV4Z37IibqCMkY3mV3g6OWQbWHK7uVErZp8rRE95HepN4Y8sq4R7vvXrCYvrWHs5Ur_eea_5dP-meJrh0jtDpyQjmYkQrAma9Sme1i8nGuwxy3UgBZc9DUrpM76bQYOXarwc0Y8Xyk_wcuoyJuRJoelGink3pLLyc4R3PToS6sy_m1fUgM"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-[18px] tracking-tight text-primary font-bold uppercase drop-shadow-[0_0_10px_rgba(255,182,142,0.3)]">Trazo Mental</span><span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded bg-[#1e2027] text-on-surface-variant border border-[#3d2f26]/60 text-[10px]">v1.2 • Bioclimática Activa</span></div><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-primary-container">energy_savings_leaf</span> Proyecto: Centro Comunitario Modular / Confort Térmico &amp; Solar</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 bg-[#16181d] rounded border border-[#3d2f26]/60"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#ff7a1a]"></span><span class="font-label-sm text-label-sm text-on-surface-variant">Simulación Bio-CAD</span><span class="font-label-sm text-label-sm text-primary font-bold">ACTIVA</span></div><div class="h-4 w-[1px] bg-[#3d2f26]/60"></div><div class="flex items-center gap-space-xs"><button class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface hover:text-primary transition-colors border border-[#3d2f26]/60 font-label-md text-label-md" type="button"><span class="material-symbols-outlined text-[15px]">file_download</span><span>Reporte Bioclimático</span></button><button class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-primary-container text-surface-container-lowest hover:bg-[#ff8c33] font-label-md text-label-md font-semibold transition-all shadow-[0_0_15px_rgba(255,122,26,0.45)]" type="button"><span class="material-symbols-outlined text-[15px]">photo_camera</span><span>Captura Asoleamiento</span></button></div><div class="h-4 w-[1px] bg-[#3d2f26]/60"></div><div class="flex items-center gap-space-sm"><div class="flex flex-col items-end"><span class="font-label-md text-label-md text-on-surface">Estudio 29 • Bioclimática</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim">MODO SOLAR &amp; VIENTOS</span></div><div class="w-8 h-8 rounded-full bg-primary-container text-surface-container-lowest flex items-center justify-center font-bold shadow-[0_0_12px_rgba(255,122,26,0.5)]"><span class="material-symbols-outlined text-[18px]">wb_sunny</span></div></div></div></header><aside class="fixed left-0 top-14 bottom-0 w-64 bg-[#111317] border-r border-[#3d2f26]/60 z-40 flex flex-col justify-between"><div class="flex flex-col"><div class="px-space-md py-space-sm border-b border-[#3d2f26]/50 flex items-center justify-between bg-[#0e1014]"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">// HERRAMIENTAS CAD</span><span class="font-label-sm text-label-sm bg-[#feb300]/20 text-secondary font-bold px-1.5 py-0.5 rounded border border-[#feb300]/40">SOL &amp; ECO</span></div><nav class="flex flex-col py-space-xs" data-active-classes="bg-[#1e2027] text-primary-container border-l-2 border-primary-container"><a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-[#16181d] hover:text-on-surface font-label-md text-label-md transition-colors" data-path="espacio-de-trabajo-3d" href="#"><span class="material-symbols-outlined text-[18px]">view_in_ar</span><span>Espacio de Trabajo 3D</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-[#16181d] hover:text-on-surface font-label-md text-label-md transition-colors" data-path="matriz-volumetrica" href="#"><span class="material-symbols-outlined text-[18px]">deployed_code</span><span>Matriz Volumétrica</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm font-label-md transition-colors bg-[#1e2027] text-primary-container border-l-2 border-primary-container font-semibold" data-path="analisis-solar-y-sombras" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[19px] text-primary-container">wb_sunny</span><span class="text-primary">Análisis Solar &amp; Vientos</span></div><span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-[#16181d] hover:text-on-surface font-label-md text-label-md transition-colors" data-path="secciones-y-cortes" href="#"><span class="material-symbols-outlined text-[18px]">splitscreen</span><span>Secciones y Cortes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-[#16181d] hover:text-on-surface font-label-md text-label-md transition-colors" data-path="revision-y-critica-docente" href="#"><span class="material-symbols-outlined text-[18px]">rate_review</span><span>Revisión y Crítica Docente</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-[#16181d] hover:text-on-surface font-label-md text-label-md transition-colors" data-path="biblioteca-de-componentes" href="#"><span class="material-symbols-outlined text-[18px]">inventory_2</span><span>Biblioteca Modular</span></a></nav></div><div class="p-space-md border-t border-[#3d2f26]/50 bg-[#0a0b0e] flex flex-col gap-space-xs"><div class="flex justify-between items-center"><span class="font-label-sm text-label-sm text-on-surface-variant">ANÁLISIS SOLAR</span><span class="font-label-sm text-label-sm text-secondary-fixed-dim font-bold">OPTIMIZADO</span></div><div class="flex justify-between items-center"><span class="font-label-sm text-label-sm text-outline">VIENTOS PREDOMINANTES</span><span class="font-label-sm text-label-sm text-tertiary">NE ➔ SO (14km/h)</span></div><div class="flex justify-between items-center"><span class="font-label-sm text-label-sm text-outline">HELIODÓN</span><span class="font-label-sm text-label-sm text-primary font-bold">11:30 AM / 21 JUN</span></div></div></aside><div class="pl-64"><main class="relative pt-14 bg-[#0d0e12] min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Studio Shell Layout (Viewport Fullbleed + Right Control Dock) -->
+<div class="relative w-full h-[calc(100vh-3.5rem)] flex flex-row overflow-hidden bg-[#0d0e12]">
+<!-- 1. VIEWPORT CENTRAL: ESPACIO DE TRABAJO 3D / AXONOMÉTRICO CON SIMULACIÓN BIOCLIMÁTICA -->
+<div class="relative flex-1 h-full overflow-hidden select-none bg-[#111317] cursor-crosshair" id="viewport-container">
+<!-- Fondo Retícula Milimétrica Cálida en Fondo Ultra Oscuro -->
+<div class="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#ff7a1a_1px,transparent_1px)] [background-size:24px_24px]"></div>
+<div class="absolute inset-0 pointer-events-none opacity-15 bg-[linear-gradient(to_right,#3d2f26_1px,transparent_1px),linear-gradient(to_bottom,#3d2f26_1px,transparent_1px)] [background-size:120px_120px]"></div>
+<!-- SUPERIOR IZQUIERDA: HERRAMIENTAS DE VISOR Y SIMULACIÓN AMBIENTAL -->
+<div class="absolute top-4 left-4 z-20 flex flex-col gap-2">
+<div class="flex items-center gap-1.5 p-1 bg-[#16181d]/90 backdrop-blur-md rounded border border-[#3d2f26]/70 shadow-2xl">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface-container-lowest font-label-md text-label-md font-bold transition-all shadow-md" id="view-mode-3d" type="button">
+<span class="material-symbols-outlined text-[16px]">wb_sunny</span>
+<span>Heliodón 3D</span>
+<span class="text-[9px] px-1 py-0.2 rounded bg-black/30 font-label-sm">SOL 52°</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-label-md text-label-md" id="view-mode-2d" type="button">
+<span class="material-symbols-outlined text-[16px]">air</span>
+<span>Rosa Vientos 2D</span>
+<span class="text-[9px] px-1 py-0.2 rounded bg-[#252830] text-tertiary font-label-sm">FLUX</span>
+</button>
+</div>
+<!-- Barra Rápida de Filtros Bioclimáticos & Toggles -->
+<div class="flex items-center gap-2 px-3 py-1.5 bg-[#16181d]/90 backdrop-blur-md rounded border border-[#3d2f26]/70 shadow-xl w-fit">
+<button class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/20 text-primary hover:bg-primary-container/30 transition-colors font-label-sm text-label-sm font-semibold border border-primary-container/30" id="toggle-solar" type="button">
+<span class="material-symbols-outlined text-[15px] text-primary-container">light_mode</span>
+<span>Bóveda Solar [ON]</span>
+</button>
+<span class="text-[#3d2f26] text-[11px]">•</span>
+<button class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-label-sm text-label-sm font-semibold border border-tertiary/30" id="toggle-wind" type="button">
+<span class="material-symbols-outlined text-[15px] text-tertiary">air</span>
+<span>Brisa Aerodinámica [ON]</span>
+</button>
+<span class="text-[#3d2f26] text-[11px]">•</span>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-secondary">explore</span>
+<span class="text-secondary font-bold">NORTE 0°</span>
+</div>
+</div>
+</div>
+<!-- SUPERIOR DERECHA VIEWPORT: Mini Brújula Solar / Selector Hora en Vivo -->
+<div class="absolute top-4 right-4 z-20 flex items-center gap-2">
+<div class="px-3 py-1.5 bg-[#16181d]/95 border border-[#3d2f26]/70 backdrop-blur-md rounded shadow-2xl text-on-surface-variant font-label-sm text-label-sm flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-primary font-semibold">
+<span class="material-symbols-outlined text-[16px] text-primary-container">schedule</span>
+<span id="label-hora-live">11:30 AM</span>
+<span class="text-[9px] text-outline px-1 rounded bg-[#0a0b0e] border border-[#3d2f26]/40">SOLSTICIO JUNIO</span>
+</div>
+<span class="text-[#3d2f26]">•</span>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">sunny</span>
+<span>AZIMUT 142° • ALT 52°</span>
+</div>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse shadow-[0_0_10px_#ff7a1a]"></span>
+</div>
+</div>
+<!-- ÁREA DE RENDERIZADO INTERACTIVO BIOCLIMÁTICO (SVG CON TRAYECTORIA SOLAR, VIENTO Y SOMBRAS DINÁMICAS) -->
+<div class="relative w-full h-full flex items-center justify-center">
+<svg class="w-full h-full max-w-[1240px] max-h-[800px] drop-shadow-2xl transition-all duration-300" id="cad-canvas" viewbox="0 0 1000 700">
+<defs>
+<!-- Sombra de Suelo Proyectada Cálida y Profunda -->
+<radialgradient cx="50%" cy="50%" fx="50%" fy="50%" id="ground-shadow" r="50%">
+<stop offset="0%" stop-color="#000000" stop-opacity="0.9"></stop>
+<stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
+</radialgradient>
+<!-- Arco Solar Glow -->
+<lineargradient id="solar-arc-grad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ffd799" stop-opacity="0.3"></stop>
+<stop offset="50%" stop-color="#ff7a1a" stop-opacity="0.95"></stop>
+<stop offset="100%" stop-color="#ffb68e" stop-opacity="0.4"></stop>
+</lineargradient>
+<!-- Gradiente Brisa / Flujo Viento Turquesa / Celeste Suave -->
+<lineargradient id="wind-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#26dcdd" stop-opacity="0"></stop>
+<stop offset="40%" stop-color="#26dcdd" stop-opacity="0.8"></stop>
+<stop offset="80%" stop-color="#56f9f9" stop-opacity="0.9"></stop>
+<stop offset="100%" stop-color="#26dcdd" stop-opacity="0.1"></stop>
+</lineargradient>
+<!-- Caras Soleadas & Sombra Propia para Volúmenes -->
+<lineargradient id="vol-sunny-top" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ffe6d5"></stop>
+<stop offset="100%" stop-color="#ffb68e"></stop>
+</lineargradient>
+<lineargradient id="vol-sunny-left" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff8933"></stop>
+<stop offset="100%" stop-color="#a84300"></stop>
+</lineargradient>
+<lineargradient id="vol-shade-right" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#2a1e17"></stop>
+<stop offset="100%" stop-color="#140d09"></stop>
+</lineargradient>
+<!-- Prisma Activo (Naranja Cálido Vibrante #ff7a1a) -->
+<lineargradient id="active-warm-top" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#fff1e8"></stop>
+<stop offset="100%" stop-color="#ffb68e"></stop>
+</lineargradient>
+<lineargradient id="active-warm-left" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ff944d"></stop>
+<stop offset="100%" stop-color="#cc5200"></stop>
+</lineargradient>
+<lineargradient id="active-warm-right" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#47230e"></stop>
+<stop offset="100%" stop-color="#261005"></stop>
+</lineargradient>
+<!-- Flecha Marcador para Flujo de Viento -->
+<marker id="wind-arrow" markerheight="7" markerwidth="7" orient="auto" refx="5" refy="3.5">
+<polygon fill="#26dcdd" points="0 0, 7 3.5, 0 7"></polygon>
+</marker>
+</defs>
+<!-- 01. PLANO DE TIERRA & RETÍCULA CON EJE NORTE BIOCLIMÁTICO -->
+<g id="iso-ground" opacity="0.9">
+<!-- Ejes Guías Isométricos Cálidos -->
+<path d="M 500,480 L 140,270 M 500,480 L 860,270 M 500,480 L 500,650" stroke="#ff7a1a" stroke-dasharray="4,4" stroke-opacity="0.4" stroke-width="1.5"></path>
+<path d="M 180,290 L 500,475 L 820,290 L 500,105 Z" fill="none" stroke="#3d2f26" stroke-width="1.2"></path>
+<path d="M 260,335 L 580,150 M 340,380 L 660,195 M 420,425 L 740,240" stroke="#1e2027" stroke-dasharray="2,3"></path>
+<path d="M 740,335 L 420,150 M 660,380 L 340,195 M 580,425 L 260,240" stroke="#1e2027" stroke-dasharray="2,3"></path>
+<!-- Sombras Proyectadas Arrojadas según Sol a las 11:30 AM (Azimut 142°, sombra alargada hacia Noroeste) -->
+<g id="dynamic-shadows" opacity="0.8">
+<!-- Sombra Prisma Servicios -->
+<polygon fill="#050608" points="330,340 390,375 290,410 240,360 300,310"></polygon>
+<!-- Sombra Galería Longitudinal -->
+<polygon fill="#050608" points="360,440 460,495 380,545 280,475"></polygon>
+<!-- Sombra Prisma Activo Central -->
+<polygon fill="#050608" points="450,420 540,470 410,540 320,475 410,390"></polygon>
+<!-- Sombra Taller Cilíndrico -->
+<ellipse cx="560" cy="385" fill="#050608" rx="48" ry="20"></ellipse>
+</g>
+</g>
+<!-- 02. HELIODÓN Y BÓVEDA CELESTE: TRAYECTORIA SOLAR -->
+<g id="solar-path-system">
+<!-- Bóveda Solar / Elipse de Trayectoria -->
+<path d="M 200,390 C 240,110 760,110 820,380" fill="none" stroke="url(#solar-arc-grad)" stroke-dasharray="5,4" stroke-width="2.2"></path>
+<!-- Marcadores Horarios en la Bóveda -->
+<circle cx="280" cy="275" fill="#feb300" opacity="0.9" r="4"></circle>
+<text class="font-label-sm text-[9px]" fill="#ffd799" x="255" y="270">08:00 AM</text>
+<circle cx="410" cy="180" fill="#feb300" opacity="0.9" r="4"></circle>
+<text class="font-label-sm text-[9px]" fill="#ffd799" x="385" y="168">10:00 AM</text>
+<circle cx="640" cy="210" fill="#feb300" opacity="0.9" r="4"></circle>
+<text class="font-label-sm text-[9px]" fill="#ffd799" x="650" y="205">14:00 PM</text>
+<circle cx="750" cy="310" fill="#feb300" opacity="0.9" r="4"></circle>
+<text class="font-label-sm text-[9px]" fill="#ffd799" x="760" y="315">17:30 PM</text>
+<!-- SOL ACTUAL A LAS 11:30 AM (Alt: 52°, Azimut: 142°) -->
+<g id="sun-body" transform="translate(515, 155)">
+<!-- Corona de Luz Solar -->
+<circle class="animate-ping" fill="#ff7a1a" opacity="0.35" r="18"></circle>
+<circle fill="#feb300" opacity="0.6" r="13"></circle>
+<circle fill="#fff4ee" r="8" stroke="#ff7a1a" stroke-width="2.5"></circle>
+<!-- Rayos Solares hacia el prisma activo -->
+<line stroke="#ff7a1a" stroke-dasharray="3,3" stroke-opacity="0.8" stroke-width="1.2" x1="0" x2="-20" y1="12" y2="150"></line>
+<line stroke="#ff7a1a" stroke-dasharray="3,3" stroke-opacity="0.8" stroke-width="1.2" x1="5" x2="30" y1="12" y2="140"></line>
+<!-- Tag Solar -->
+<rect fill="#0a0b0e" height="18" rx="2" stroke="#ff7a1a" stroke-width="1" width="138" x="-69" y="-30"></rect>
+<text class="font-label-sm text-[10px] font-bold" fill="#ffb68e" text-anchor="middle" x="0" y="-17">☀️ SOL: 11:30 AM (52° ALT)</text>
+</g>
+</g>
+<!-- 03. CORRIENTES DE AIRE & VECTORES DE VIENTO PREDOMINANTE (NE ➔ SO) -->
+<g id="wind-flow-system">
+<!-- Flujo 1: Corriente Superior que rodea el Taller Cilíndrico -->
+<path d="M 830,220 C 730,230 650,260 590,280 C 530,300 480,310 390,320" fill="none" marker-end="url(#wind-arrow)" opacity="0.8" stroke="#26dcdd" stroke-dasharray="6,4" stroke-width="2">
+<animate attributename="stroke-dashoffset" dur="2s" repeatcount="indefinite" values="20; 0"></animate>
+</path>
+<!-- Flujo 2: Canalización Cruzada entre Prisma Activo y Núcleo de Servicios (Ventilación Cruzada) -->
+<path d="M 800,280 C 690,310 570,340 500,345 C 440,350 380,360 280,380" fill="none" marker-end="url(#wind-arrow)" opacity="0.95" stroke="#56f9f9" stroke-dasharray="8,4" stroke-width="2.6">
+<animate attributename="stroke-dashoffset" dur="1.5s" repeatcount="indefinite" values="24; 0"></animate>
+</path>
+<!-- Flujo 3: Brisa Frontal a ras de Galería Baja -->
+<path d="M 750,370 C 660,390 570,410 490,440 C 430,460 360,490 260,510" fill="none" marker-end="url(#wind-arrow)" opacity="0.8" stroke="#26dcdd" stroke-dasharray="6,4" stroke-width="1.8">
+<animate attributename="stroke-dashoffset" dur="2.2s" repeatcount="indefinite" values="20; 0"></animate>
+</path>
+<!-- Tag de Efecto Venturi / Brisa Acelerada -->
+<g transform="translate(470, 318)">
+<rect fill="#0a0b0e" fill-opacity="0.95" height="18" rx="2" stroke="#26dcdd" stroke-width="0.8" width="130" x="-65" y="-9"></rect>
+<text class="font-label-sm text-[9px] font-bold" fill="#26dcdd" text-anchor="middle" x="0" y="3">
+      ≋ VENTILACIÓN CRUZADA (16 km/h)
+    </text>
+</g>
+</g>
+<!-- 04. VOLÚMENES SECUNDARIOS FIJADOS (Con diagnóstico bioclimático) -->
+<!-- Volumen A: Núcleo Servicios (Prisma Compacto Atrás Izquierda) -->
+<g class="cursor-pointer transition-transform hover:opacity-95" id="vol-servicios" onclick="selectExistingVolume('Servicios', 6.0, 6.0, 9.0)">
+<polygon fill="url(#vol-sunny-left)" points="330,340 390,375 390,265 330,230"></polygon>
+<polygon fill="url(#vol-shade-right)" points="390,375 450,340 450,230 390,265"></polygon>
+<polygon fill="url(#vol-sunny-top)" points="390,265 450,230 390,195 330,230"></polygon>
+<polygon fill="none" points="390,265 450,230 390,195 330,230" stroke="#ffb68e" stroke-opacity="0.8" stroke-width="1"></polygon>
+<line stroke="#ffb68e" stroke-opacity="0.8" stroke-width="1" x1="390" x2="390" y1="265" y2="375"></line>
+<text class="font-label-sm text-[10px]" fill="#d4b2a3" letter-spacing="0.05em" x="350" y="220">NÚCLEO 01 [9m]</text>
+<!-- Tag Bioclimático en cara fría/sombra -->
+<rect fill="#0a0b0e" height="14" rx="2" stroke="#877063" stroke-width="0.5" width="84" x="395" y="315"></rect>
+<text class="font-label-sm text-[8px]" fill="#ffd799" x="400" y="325">Sombra Propia</text>
+</g>
+<!-- Volumen B: Cilindro Conceptual (Taller / Ágora Abierta) -->
+<g class="cursor-pointer transition-transform hover:opacity-95" id="vol-agora" onclick="selectExistingVolume('Ágora Cilíndrica', 8.0, 8.0, 4.0)">
+<path d="M 580,370 C 580,390 660,390 660,370 L 660,320 C 660,300 580,300 580,320 Z" fill="url(#vol-shade-right)"></path>
+<path d="M 580,370 C 580,390 620,390 620,370 L 620,320 C 620,300 580,300 580,320 Z" fill="url(#vol-sunny-left)"></path>
+<ellipse cx="620" cy="320" fill="url(#vol-sunny-top)" rx="40" ry="18" stroke="#ffb68e" stroke-width="1.2"></ellipse>
+<text class="font-label-sm text-[10px]" fill="#d4b2a3" x="595" y="300">TALLER Ø8m</text>
+<!-- Tag de Brisa alrededor del cilindro -->
+<text class="font-label-sm text-[9px]" fill="#26dcdd" x="655" y="345">⇥ Desvío Brisa</text>
+</g>
+<!-- Volumen C: Prisma Longitudinal (Nave Comunitaria Baja) -->
+<g class="cursor-pointer" id="vol-nave" onclick="selectExistingVolume('Nave Baja', 14.0, 6.0, 3.5)">
+<polygon fill="url(#vol-sunny-left)" points="360,440 460,495 460,445 360,390"></polygon>
+<polygon fill="url(#vol-shade-right)" points="460,495 560,440 560,390 460,445"></polygon>
+<polygon fill="url(#vol-sunny-top)" points="460,445 560,390 460,335 360,390"></polygon>
+<polygon fill="none" points="460,445 560,390 460,335 360,390" stroke="#ffb68e" stroke-opacity="0.9" stroke-width="1.2"></polygon>
+<line stroke="#ffb68e" stroke-opacity="0.9" stroke-width="1.2" x1="460" x2="460" y1="445" y2="495"></line>
+<text class="font-label-sm text-[10px]" fill="#d4b2a3" x="475" y="475">GALERÍA [3.5m]</text>
+</g>
+<!-- 05. VOLUMEN EN CURSO / ACTIVO (PRISMA CENTRAL EN TONO CÁLIDO VIBRANTE #ff7a1a) -->
+<g class="cursor-grab active:cursor-grabbing" id="volumen-activo-grupo">
+<!-- Caras Axonométricas con iluminación Solar Activa -->
+<!-- Cara Izquierda (Fachada Soleada / Máxima Radiación Solar Matutina) -->
+<polygon fill="url(#active-warm-left)" id="face-left" points="450,420 540,470 540,360 450,310"></polygon>
+<!-- Cara Derecha (Zona de Sotavento / Sombra Propia) -->
+<polygon fill="url(#active-warm-right)" id="face-right" points="540,470 650,410 650,300 540,360"></polygon>
+<!-- Cara Superior (Cubierta Soleada Cenital) -->
+<polygon fill="url(#active-warm-top)" id="face-top" points="540,360 650,300 560,250 450,310"></polygon>
+<!-- Bounding Box / Aristas Naranja Vibrante (#ff7a1a) -->
+<g stroke="#ff7a1a" stroke-width="2">
+<polygon fill="none" points="540,360 650,300 560,250 450,310"></polygon>
+<line x1="450" x2="450" y1="310" y2="420"></line>
+<line x1="540" x2="540" y1="360" y2="470"></line>
+<line x1="650" x2="650" y1="300" y2="410"></line>
+<polyline fill="none" points="450,420 540,470 650,410"></polyline>
+</g>
+<!-- Aristas Ocultas Paramétricas -->
+<g opacity="0.6" stroke="#ffb68e" stroke-dasharray="3,3" stroke-width="1">
+<line x1="450" x2="560" y1="420" y2="360"></line>
+<line x1="650" x2="560" y1="410" y2="360"></line>
+<line x1="560" x2="560" y1="250" y2="360"></line>
+</g>
+<!-- Vértices Manipuladores de Cota (Grip Nodes Cálidos) -->
+<circle cx="450" cy="310" fill="#ff7a1a" r="3.5" stroke="#0a0b0e" stroke-width="1.5"></circle>
+<circle class="animate-pulse" cx="540" cy="360" fill="#fff4ee" r="4.5" stroke="#ff7a1a" stroke-width="2"></circle>
+<circle cx="650" cy="300" fill="#ff7a1a" r="3.5" stroke="#0a0b0e" stroke-width="1.5"></circle>
+<circle cx="560" cy="250" fill="#ff7a1a" r="3.5" stroke="#0a0b0e" stroke-width="1.5"></circle>
+<circle cx="540" cy="470" fill="#ff7a1a" r="3.5" stroke="#0a0b0e" stroke-width="1.5"></circle>
+<!-- Indicadores Gráficos Bioclimáticos Directos sobre Caras del Prisma -->
+<!-- Indicador Cara Soleada -->
+<g transform="translate(485, 415)">
+<rect fill="#0a0b0e" fill-opacity="0.9" height="16" rx="2" stroke="#ff7a1a" stroke-width="0.8" width="108" x="-54" y="-8"></rect>
+<text class="font-label-sm text-[8px] font-bold" fill="#ffd799" text-anchor="middle" x="0" y="3">☀ MÁX. RADIACIÓN (SE)</text>
+</g>
+<!-- Indicador Cara Sombra Propia / Resguardo -->
+<g transform="translate(605, 375)">
+<rect fill="#0a0b0e" fill-opacity="0.9" height="16" rx="2" stroke="#877063" stroke-width="0.8" width="94" x="-47" y="-8"></rect>
+<text class="font-label-sm text-[8px]" fill="#d4b2a3" text-anchor="middle" x="0" y="3">SOTAVENTO / RESGUARDO</text>
+</g>
+<!-- LÍNEAS DE COTA Y DIMENSIONES EN TIEMPO REAL -->
+<!-- Cota Ancho Eje X (12.00m) -->
+<g id="dimension-x">
+<line stroke="#ff7a1a" stroke-dasharray="2,2" stroke-width="1" x1="435" x2="525" y1="430" y2="480"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="432" x2="438" y1="424" y2="436"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="522" x2="528" y1="474" y2="486"></line>
+<rect fill="#0a0b0e" height="16" rx="2" stroke="#ff7a1a" stroke-width="0.8" width="50" x="459" y="460"></rect>
+<text class="font-label-sm text-[10px] font-bold" fill="#ffdbca" text-anchor="middle" x="484" y="472">12.00 m</text>
+</g>
+<!-- Cota Fondo Eje Y (8.00m) -->
+<g id="dimension-y">
+<line stroke="#ff7a1a" stroke-dasharray="2,2" stroke-width="1" x1="555" x2="665" y1="480" y2="420"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="551" x2="559" y1="486" y2="474"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="661" x2="669" y1="426" y2="414"></line>
+<rect fill="#0a0b0e" height="16" rx="2" stroke="#ff7a1a" stroke-width="0.8" width="46" x="599" y="452"></rect>
+<text class="font-label-sm text-[10px] font-bold" fill="#ffdbca" text-anchor="middle" x="622" y="464">8.00 m</text>
+</g>
+<!-- Cota Altura Eje Z (6.00m) -->
+<g id="dimension-z">
+<line stroke="#ff7a1a" stroke-dasharray="2,2" stroke-width="1" x1="430" x2="430" y1="420" y2="310"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="424" x2="436" y1="420" y2="420"></line>
+<line stroke="#ff7a1a" stroke-width="1.5" x1="424" x2="436" y1="310" y2="310"></line>
+<rect fill="#0a0b0e" height="16" rx="2" stroke="#ff7a1a" stroke-width="0.8" width="48" x="389" y="358"></rect>
+<text class="font-label-sm text-[10px] font-bold" fill="#ff7a1a" text-anchor="middle" x="413" y="370">H: 6.00m</text>
+</g>
+<!-- Tag Flotante de Uso / Programa en Espacio -->
+<g transform="translate(540, 230)">
+<rect fill="#0a0b0e" fill-opacity="0.95" height="22" rx="3" stroke="#ff7a1a" stroke-width="1.2" width="144" x="-72" y="-12"></rect>
+<text class="font-label-sm text-[10px] font-bold" fill="#ff7a1a" letter-spacing="0.05em" text-anchor="middle" x="0" y="3">
+      [ACTIVO] ACCESO / VESTÍBULO
+    </text>
+<line stroke="#ff7a1a" stroke-width="1" x1="0" x2="0" y1="10" y2="20"></line>
+</g>
+</g>
+</svg>
+<!-- Indicador de Coordenadas Flotantes del Cursor en Visor -->
+<div class="absolute bottom-14 left-4 z-20 flex items-center gap-3 px-3 py-1.5 bg-[#16181d]/90 border border-[#3d2f26]/70 backdrop-blur-md rounded shadow-xl text-on-surface-variant font-label-sm text-label-sm border-l-2 border-primary-container">
+<span class="text-primary-container font-bold">BIO-CURSOR [CAD]</span>
+<span>X: <span class="text-on-surface" id="pos-x-coord">4.50m</span></span>
+<span>Y: <span class="text-on-surface" id="pos-y-coord">12.00m</span></span>
+<span>Z: <span class="text-on-surface" id="pos-z-coord">0.00m</span></span>
+</div>
+<!-- Rosa de los Vientos / Brújula de Orientación del Norte (Esquina Inferior Izquierda) -->
+<div class="absolute bottom-4 left-4 z-20 flex items-center gap-3 p-2 bg-[#16181d]/95 border border-[#3d2f26]/70 backdrop-blur-md rounded shadow-2xl">
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="w-full h-full" viewbox="0 0 50 50">
+<!-- Círculo exterior brújula -->
+<circle cx="25" cy="25" fill="none" r="22" stroke="#3d2f26" stroke-dasharray="2,2" stroke-width="1"></circle>
+<!-- Flecha Norte Ámbar / Naranja -->
+<polygon fill="#ff7a1a" points="25,5 29,24 25,21 21,24"></polygon>
+<!-- Flecha Sur Gris Sombra -->
+<polygon fill="#3d2f26" points="25,45 29,26 25,29 21,26"></polygon>
+<circle cx="25" cy="25" fill="#ffd799" r="2.5"></circle>
+<text class="font-label-sm text-[8px] font-bold" fill="#ff7a1a" text-anchor="middle" x="25" y="4">N</text>
+<text class="font-label-sm text-[7px]" fill="#26dcdd" text-anchor="middle" x="46" y="27">E</text>
+</svg>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-[10px] text-primary-container font-bold leading-none">NORTE GEOGRÁFICO</span>
+<span class="text-[9px] px-1 py-0.2 rounded bg-[#1e2027] text-secondary font-bold">0°</span>
+</div>
+<span class="font-label-sm text-[9px] text-tertiary mt-1 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[11px]">air</span> Viento NE ➔ SO (14km/h)
+</span>
+</div>
+</div>
+<!-- BANNER INFORMATIVO DE ATAJO [ESPACIO] -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 px-4 py-2 bg-[#16181d]/95 border border-[#3d2f26]/70 backdrop-blur-md rounded-full shadow-2xl transition-all">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<p class="font-label-md text-label-md text-on-surface flex items-center gap-1.5 m-0">
+<span>Presiona</span>
+<kbd class="px-2 py-0.5 rounded bg-[#0a0b0e] text-primary font-label-sm text-label-sm font-bold shadow-inner border border-[#3d2f26]/60">[ESPACIO]</kbd>
+<span class="text-on-surface-variant">para fijar volumen y consolidar diseño bioclimático.</span>
+</p>
+</div>
+</div>
+</div>
+<!-- 2. PANEL DE CONTROL LATERAL DERECHO (ESTÉTICA OSCURA PROFUNDA & ACENTOS CÁLIDOS) -->
+<aside class="relative w-[400px] h-full flex flex-col bg-[#111317] shadow-[-8px_0_30px_rgba(0,0,0,0.85)] z-30 select-none overflow-hidden border-l border-[#3d2f26]/50">
+<!-- CABECERA DEL PANEL -->
+<div class="px-4 py-3 bg-[#0e1014] flex items-center justify-between border-b border-[#3d2f26]/50 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">wb_sunny</span>
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-on-surface uppercase text-[15px]">
+      PANEL BIOCLIMÁTICO &amp; CAD
+    </span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-surface-container-lowest font-bold shadow-[0_0_8px_rgba(255,122,26,0.3)]">ACTIVO</span>
+</div>
+<!-- CONTENIDO SCROLLABLE DEL WORKBENCH -->
+<div class="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-4 bg-[#111317]">
+<!-- WIDGET TEMÁTICO: SEÑAL CEREBRAL (ESTÉTICA CÁLIDA NARANJA) -->
+<div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-2.5 shadow-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-[16px]">psychology</span>
+<span class="font-label-sm text-label-sm text-primary-container font-bold uppercase tracking-wider">SEÑAL CEREBRAL • BIO-ESTADO</span>
+</div>
+<button class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface-variant hover:text-primary font-label-sm text-[10px] transition-colors border border-[#3d2f26]/30" id="btn-breathing" type="button">
+<span class="material-symbols-outlined text-[12px] text-primary">air</span>
+<span>Pausa Mental</span>
+</button>
+</div>
+<!-- Gráfica Dinámica de Ondas Cerebrales Naranja Cálido -->
+<div class="relative w-full h-10 bg-[#0a0b0e] rounded p-1 flex items-center overflow-hidden border border-[#3d2f26]/40">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 320 40">
+<path class="opacity-95" d="M 0,20 Q 20,5 40,20 T 80,20 T 120,5 T 160,35 T 200,10 T 240,25 T 280,18 T 320,20" fill="none" stroke="#ff7a1a" stroke-linecap="round" stroke-width="2">
+<animate attributename="d" dur="3s" repeatcount="indefinite" values="
+            M 0,20 Q 20,5 40,20 T 80,20 T 120,5 T 160,35 T 200,10 T 240,25 T 280,18 T 320,20;
+            M 0,20 Q 20,32 40,20 T 80,15 T 120,30 T 160,10 T 200,30 T 240,15 T 280,22 T 320,20;
+            M 0,20 Q 20,5 40,20 T 80,20 T 120,5 T 160,35 T 200,10 T 240,25 T 280,18 T 320,20
+          "></animate>
+</path>
+<line stroke="#3d2f26" stroke-dasharray="3,3" stroke-width="0.8" x1="0" x2="320" y1="20" y2="20"></line>
+</svg>
+<div class="absolute right-2 top-1 flex items-center gap-1 bg-[#0a0b0e]/90 px-1 rounded border border-[#3d2f26]/30">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-sm text-[9px] text-primary">SINCRONIZADO</span>
+</div>
+</div>
+<!-- Métricas de Estado Mental -->
+<div class="grid grid-cols-2 gap-2 pt-0.5">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">FOCO CREATIVO</span>
+<span class="font-headline-md text-[20px] text-primary-container font-bold leading-tight">74% <span class="font-body-sm text-[11px] font-normal text-on-surface-variant">/ Alto Flujo</span></span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-outline">CONFORT CLIMÁTICO</span>
+<span class="font-label-sm text-[10px] text-secondary-fixed-dim font-medium mt-1">Consciencia Pasiva Óptima</span>
+</div>
+</div>
+</div>
+<!-- NUEVA SECCIÓN: MÓDULO BIOCLIMÁTICO BÁSICO -->
+<div class="p-3 bg-[#16181d] rounded border border-primary-container/40 flex flex-col gap-3 shadow-lg">
+<div class="flex items-center justify-between pb-1 border-b border-[#3d2f26]/50">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-[17px]">solar_power</span>
+<span class="font-label-sm text-label-sm text-primary-container font-bold uppercase tracking-wider">// MÓDULO BIOCLIMÁTICO BÁSICO</span>
+</div>
+<span class="font-label-sm text-[9px] px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-bold border border-secondary/30">SIMULACIÓN V1</span>
+</div>
+<!-- Control 1: Asoleamiento & Hora Solar -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-label-sm text-label-sm">
+<span class="text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+<span>Hora Solar / Heliodón</span>
+</span>
+<span class="text-primary-container font-bold" id="label-hora-slider">11:30 AM (Solsticio Verano)</span>
+</div>
+<input class="w-full accent-primary-container h-1.5 bg-[#252830] rounded cursor-pointer" id="slider-hora" max="19" min="7" step="0.5" type="range" value="11.5"/>
+<div class="flex justify-between text-[9px] font-label-sm text-outline">
+<span>07:00 AM (Amanecer)</span>
+<span>12:00 PM (Cenit)</span>
+<span>19:00 PM (Ocaso)</span>
+</div>
+<!-- Indicadores de Radiación en Fachadas Críticas -->
+<div class="grid grid-cols-2 gap-2 mt-1">
+<div class="flex flex-col p-2 bg-[#0a0b0e] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline">Horas Sol Directo</span>
+<span class="font-label-md text-primary font-bold">6.8 hrs / día</span>
+<span class="text-[9px] text-on-surface-variant">Fachada SE protegida</span>
+</div>
+<div class="flex flex-col p-2 bg-[#0a0b0e] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline">Radiación Crítica</span>
+<span class="font-label-md text-secondary-fixed-dim font-bold">640 W/m²</span>
+<span class="text-[9px] text-secondary">Aleros recomendados</span>
+</div>
+</div>
+</div>
+<!-- Control 2: Viento y Ventilación Natural -->
+<div class="flex flex-col gap-1.5 pt-1">
+<label class="font-label-sm text-label-sm text-outline uppercase flex items-center justify-between">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">air</span>
+<span>Dirección Predominante Viento</span>
+</span>
+<span class="text-tertiary font-bold">14 km/h (Brisa Leve)</span>
+</label>
+<!-- Selector de Rosa de 8 Rumbos -->
+<div class="grid grid-cols-8 gap-1 text-center font-label-sm" id="wind-dir-selector">
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">N</button>
+<button class="py-1 rounded bg-tertiary text-surface-container-lowest font-bold text-[10px] shadow" type="button">NE</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">E</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">SE</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">S</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">SO</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">O</button>
+<button class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30" type="button">NO</button>
+</div>
+<!-- Indicador de Efectividad de Ventilación -->
+<div class="flex items-center justify-between p-2 rounded bg-tertiary/10 border border-tertiary/30">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">waves</span>
+<span class="font-label-sm text-[10px] text-tertiary font-semibold">Ventilación Cruzada Efectiva</span>
+</div>
+<span class="font-label-sm text-[10px] font-bold text-tertiary px-1.5 py-0.2 rounded bg-tertiary/20">82% ALTA</span>
+</div>
+</div>
+<!-- Diagnóstico y Recomendaciones Bioclimáticas al Estudiante -->
+<div class="p-2.5 rounded bg-[#0a0b0e] border border-[#3d2f26]/40 flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[15px]">tips_and_updates</span>
+<span class="font-label-sm text-[10px] font-bold uppercase tracking-wider">DIAGNÓSTICO BIOCLIMÁTICO RÁPIDO</span>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant leading-relaxed m-0">
+  • <strong>Confort Térmico:</strong> Óptima inercia térmica en núcleo posterior. La fachada SE recibe el 70% de ganancia pasiva matutina.<br/>
+  • <strong>Estrategia de Brisa:</strong> El pasaje entre el Prisma Central (#VOL-04) y el Módulo de Servicios genera aceleración natural de aire. Mantener vanos permeables.
+</p>
+</div>
+</div>
+<!-- SECCIÓN: VOLUMEN EN CURSO -->
+<div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-3 shadow-md">
+<div class="flex items-center justify-between pb-1">
+<span class="font-label-sm text-label-sm text-primary-container font-bold uppercase tracking-wider">// VOLUMEN EN CURSO</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">ID: #VOL-04</span>
+</div>
+<!-- Selector de Forma Primitiva Técnica -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-outline uppercase">Forma Primitiva</label>
+<div class="grid grid-cols-4 gap-1.5" id="shape-selector">
+<button class="flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/40 hover:bg-[#252830] transition-colors group" data-shape="box" type="button">
+<span class="material-symbols-outlined text-[20px]">check_box_outline_blank</span>
+<span class="font-label-sm text-[9px] mt-1 font-semibold">Cubo/Prisma</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30" data-shape="cylinder" type="button">
+<span class="material-symbols-outlined text-[20px]">database</span>
+<span class="font-label-sm text-[9px] mt-1">Cilindro</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30" data-shape="wedge" type="button">
+<span class="material-symbols-outlined text-[20px]">change_history</span>
+<span class="font-label-sm text-[9px] mt-1">Cuña</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30" data-shape="pyramid" type="button">
+<span class="material-symbols-outlined text-[20px]">details</span>
+<span class="font-label-sm text-[9px] mt-1">Truncada</span>
+</button>
+</div>
+</div>
+<!-- Selector de Intención Volumétrica / Etiqueta Programática -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-outline uppercase">Intención Programática</label>
+<div class="flex flex-wrap gap-1.5">
+<button class="px-2 py-1 rounded-full bg-primary-container text-surface-container-lowest font-label-sm text-[10px] font-semibold" type="button">
+      Acceso / Vestíbulo
+    </button>
+<button class="px-2 py-1 rounded-full bg-[#1e2027] text-on-surface-variant hover:text-on-surface font-label-sm text-[10px] border border-[#3d2f26]/30" type="button">
+      Taller Central
+    </button>
+<button class="px-2 py-1 rounded-full bg-[#1e2027] text-on-surface-variant hover:text-on-surface font-label-sm text-[10px] border border-[#3d2f26]/30" type="button">
+      Núcleo Servicios
+    </button>
+<button class="px-2 py-1 rounded-full bg-[#1e2027] text-on-surface-variant hover:text-on-surface font-label-sm text-[10px] border border-[#3d2f26]/30" type="button">
+      Vacío / Patio Solar
+    </button>
+</div>
+</div>
+<!-- Posición Espacial (Coordenadas X, Y, Z) -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-outline uppercase">Posición de Origen (Offset)</label>
+<div class="grid grid-cols-3 gap-2">
+<div class="flex items-center bg-[#0a0b0e] rounded px-2 py-1 border border-[#3d2f26]/40">
+<span class="font-label-sm text-label-sm text-outline mr-1.5">X:</span>
+<input class="w-full bg-transparent font-label-sm text-label-sm text-on-surface focus:outline-none focus:text-primary" id="input-pos-x" type="text" value="4.50"/>
+<span class="font-label-sm text-[9px] text-outline-variant">m</span>
+</div>
+<div class="flex items-center bg-[#0a0b0e] rounded px-2 py-1 border border-[#3d2f26]/40">
+<span class="font-label-sm text-label-sm text-outline mr-1.5">Y:</span>
+<input class="w-full bg-transparent font-label-sm text-label-sm text-on-surface focus:outline-none focus:text-primary" id="input-pos-y" type="text" value="12.00"/>
+<span class="font-label-sm text-[9px] text-outline-variant">m</span>
+</div>
+<div class="flex items-center bg-[#0a0b0e] rounded px-2 py-1 border border-[#3d2f26]/40">
+<span class="font-label-sm text-label-sm text-outline mr-1.5">Z:</span>
+<input class="w-full bg-transparent font-label-sm text-label-sm text-on-surface focus:outline-none focus:text-primary" id="input-pos-z" type="text" value="0.00"/>
+<span class="font-label-sm text-[9px] text-outline-variant">m</span>
+</div>
+</div>
+</div>
+<!-- Ajuste Paramétrico de Medidas Específicas -->
+<div class="flex flex-col gap-2.5 pt-1">
+<label class="font-label-sm text-label-sm text-outline uppercase">Dimensiones Paramétricas</label>
+<!-- Ancho X -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center font-label-sm text-label-sm">
+<span class="text-on-surface">Ancho (Eje X)</span>
+<span class="text-primary-container font-bold" id="val-ancho">12.00 m</span>
+</div>
+<input class="w-full accent-primary-container h-1 bg-[#252830] rounded-lg cursor-pointer" id="slider-ancho" max="24" min="2" step="0.5" type="range" value="12"/>
+</div>
+<!-- Fondo Y -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center font-label-sm text-label-sm">
+<span class="text-on-surface">Fondo (Eje Y)</span>
+<span class="text-primary-container font-bold" id="val-fondo">8.00 m</span>
+</div>
+<input class="w-full accent-primary-container h-1 bg-[#252830] rounded-lg cursor-pointer" id="slider-fondo" max="20" min="2" step="0.5" type="range" value="8"/>
+</div>
+<!-- Alto Z -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center font-label-sm text-label-sm">
+<span class="text-on-surface">Alto (Eje Z)</span>
+<span class="text-primary-container font-bold" id="val-alto">6.00 m</span>
+</div>
+<input class="w-full accent-primary-container h-1 bg-[#252830] rounded-lg cursor-pointer" id="slider-alto" max="18" min="2" step="0.5" type="range" value="6"/>
+</div>
+</div>
+</div>
+<!-- LISTA VISIBLE DE COMANDOS Y ATAJOS DE TECLADO (PRD SPEC) -->
+<div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-2 shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary-container font-bold uppercase tracking-wider">// COMANDOS &amp; ATAJOS</span>
+<span class="material-symbols-outlined text-[15px] text-outline">keyboard</span>
+</div>
+<div class="grid grid-cols-1 gap-1.5 font-label-sm text-[10px]">
+<div class="flex items-center justify-between py-0.5">
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-primary font-bold border border-[#3d2f26]/40">W/A/S/D</kbd>
+<span class="text-outline">o flechas</span>
+</div>
+<span class="text-on-surface-variant">Reubicar / Desplazar</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-primary font-bold border border-[#3d2f26]/40">[E]</kbd>
+<span class="text-on-surface-variant">Ensanchar eje X</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-primary font-bold border border-[#3d2f26]/40">[R]</kbd>
+<span class="text-on-surface-variant">Alargar eje Y</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-primary font-bold border border-[#3d2f26]/40">[T]</kbd>
+<span class="text-on-surface-variant">Agrandar altura Z</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-primary font-bold border border-[#3d2f26]/40">[Q]</kbd>
+<span class="text-on-surface-variant">Achicar proporcional</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-2 py-0.5 rounded bg-primary-container text-surface-container-lowest font-bold">[ESPACIO]</kbd>
+<span class="text-primary font-semibold">Fijar figura final</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-error-container text-on-error font-bold">[SUPR / Backspace]</kbd>
+<span class="text-error">Eliminar volumen</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<kbd class="px-1.5 py-0.5 rounded bg-[#252830] text-outline font-bold border border-[#3d2f26]/40">[Ctrl + Z]</kbd>
+<span class="text-on-surface-variant">Deshacer paso</span>
+</div>
+</div>
+</div>
+<!-- DATOS GENERALES (CÁLCULO PARAMÉTRICO EN TIEMPO REAL) -->
+<div class="p-3 bg-[#1e2027] rounded border border-[#3d2f26]/50 flex flex-col gap-2 shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary-container font-bold uppercase tracking-wider">// DATOS GENERALES</span>
+<span class="font-label-sm text-label-sm text-outline">TIEMPO REAL</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 font-label-md">
+<div class="flex flex-col p-2 bg-[#16181d] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline uppercase">Volúmenes</span>
+<span class="font-headline-md text-[18px] text-on-surface font-bold">4 <span class="font-body-sm text-[10px] text-outline font-normal">módulos</span></span>
+</div>
+<div class="flex flex-col p-2 bg-[#16181d] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline uppercase">Huella Suelo</span>
+<span class="font-headline-md text-[18px] text-primary-container font-bold">248.50 <span class="font-body-sm text-[10px] text-primary font-normal">m²</span></span>
+</div>
+<div class="flex flex-col p-2 bg-[#16181d] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline uppercase">Sup. Construida</span>
+<span class="font-headline-md text-[18px] text-on-surface font-bold">684.00 <span class="font-body-sm text-[10px] text-outline font-normal">m²</span></span>
+</div>
+<div class="flex flex-col p-2 bg-[#16181d] rounded border border-[#3d2f26]/40">
+<span class="font-label-sm text-[9px] text-outline uppercase">Volumen Total</span>
+<span class="font-headline-md text-[18px] text-primary-container font-bold">2,736 <span class="font-body-sm text-[10px] text-primary font-normal">m³</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- PIE DEL PANEL: OPCIONES DE CONTROL (INFERIOR DERECHO) -->
+<div class="p-3 bg-[#0e1014] flex items-center justify-between gap-2 border-t border-[#3d2f26]/50">
+<button class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded bg-[#16181d] hover:bg-[#1e2027] text-on-surface font-label-md text-label-md transition-colors shadow border border-[#3d2f26]/50" id="btn-undo" type="button">
+<span class="material-symbols-outlined text-[16px]">undo</span>
+<span>Deshacer paso</span>
+</button>
+<button class="flex items-center justify-center gap-1 px-3 py-2 rounded bg-error-container/80 hover:bg-error-container text-on-error-container font-label-md text-label-md transition-colors shadow" id="btn-reset-all" type="button">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+<span>Limpiar todo</span>
+</button>
+</div>
+</aside>
+</div>
+</div>
+<!-- COMPORTAMIENTO CLIENT-SIDE & MICROINTERACCIONES BIOCLIMÁTICAS -->
+<script>
+  // Sliders Paramétricos de Volumen
+  const sliderAncho = document.getElementById('slider-ancho');
+  const sliderFondo = document.getElementById('slider-fondo');
+  const sliderAlto = document.getElementById('slider-alto');
+
+  const valAncho = document.getElementById('val-ancho');
+  const valFondo = document.getElementById('val-fondo');
+  const valAlto = document.getElementById('val-alto');
+
+  function updateDimensions() {
+    if (sliderAncho && valAncho) valAncho.textContent = parseFloat(sliderAncho.value).toFixed(2) + ' m';
+    if (sliderFondo && valFondo) valFondo.textContent = parseFloat(sliderFondo.value).toFixed(2) + ' m';
+    if (sliderAlto && valAlto) valAlto.textContent = parseFloat(sliderAlto.value).toFixed(2) + ' m';
+
+    const volGrupo = document.getElementById('volumen-activo-grupo');
+    if (volGrupo) {
+      const scaleX = sliderAncho.value / 12;
+      const scaleZ = sliderAlto.value / 6;
+      volGrupo.style.transformOrigin = "540px 470px";
+      volGrupo.style.transform = `scale(${scaleX * 0.5 + 0.5}, ${scaleZ * 0.5 + 0.5})`;
+    }
+  }
+
+  if (sliderAncho) sliderAncho.addEventListener('input', updateDimensions);
+  if (sliderFondo) sliderFondo.addEventListener('input', updateDimensions);
+  if (sliderAlto) sliderAlto.addEventListener('input', updateDimensions);
+
+  // Slider de Hora Solar / Heliodón
+  const sliderHora = document.getElementById('slider-hora');
+  const labelHoraSlider = document.getElementById('label-hora-slider');
+  const labelHoraLive = document.getElementById('label-hora-live');
+  const sunBody = document.getElementById('sun-body');
+  const dynamicShadows = document.getElementById('dynamic-shadows');
+
+  if (sliderHora) {
+    sliderHora.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      const horas = Math.floor(val);
+      const minutos = Math.round((val - horas) * 60);
+      const minStr = minutos === 0 ? '00' : minutos;
+      const ampm = horas >= 12 ? 'PM' : 'AM';
+      const formatted = `${horas}:${minStr} ${ampm}`;
+
+      if (labelHoraSlider) labelHoraSlider.textContent = `${formatted} (Solsticio Verano)`;
+      if (labelHoraLive) labelHoraLive.textContent = formatted;
+
+      // Desplazamiento del sol y alargamiento de sombras
+      if (sunBody) {
+        // Mover Sol a lo largo de la bóveda (X: de 220 a 780, Y oscila con pico a mediodía)
+        const progress = (val - 7) / 12; // 0 to 1
+        const sunX = 220 + progress * 560;
+        const sunY = 360 - Math.sin(progress * Math.PI) * 220;
+        sunBody.setAttribute('transform', `translate(${sunX}, ${sunY})`);
+      }
+
+      // Re-proyección interactiva de sombra
+      if (dynamicShadows) {
+        const shadowSkew = (val - 12) * 5;
+        dynamicShadows.style.transform = `skewX(${shadowSkew}deg)`;
+        dynamicShadows.style.transformOrigin = "500px 450px";
+      }
+    });
+  }
+
+  // Toggles de Capas Bioclimáticas (Solar / Viento)
+  const toggleSolar = document.getElementById('toggle-solar');
+  const solarSystem = document.getElementById('solar-path-system');
+  let solarActive = true;
+  if (toggleSolar && solarSystem) {
+    toggleSolar.addEventListener('click', () => {
+      solarActive = !solarActive;
+      solarSystem.style.display = solarActive ? 'block' : 'none';
+      toggleSolar.className = solarActive 
+        ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/20 text-primary hover:bg-primary-container/30 transition-colors font-label-sm text-label-sm font-semibold border border-primary-container/30'
+        : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline hover:text-on-surface transition-colors font-label-sm text-label-sm border border-[#3d2f26]/30';
+      toggleSolar.innerHTML = `<span class="material-symbols-outlined text-[15px] ${solarActive ? 'text-primary-container' : 'text-outline'}">light_mode</span><span>Bóveda Solar [${solarActive ? 'ON' : 'OFF'}]</span>`;
+    });
+  }
+
+  const toggleWind = document.getElementById('toggle-wind');
+  const windSystem = document.getElementById('wind-flow-system');
+  let windActive = true;
+  if (toggleWind && windSystem) {
+    toggleWind.addEventListener('click', () => {
+      windActive = !windActive;
+      windSystem.style.display = windActive ? 'block' : 'none';
+      toggleWind.className = windActive
+        ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-label-sm text-label-sm font-semibold border border-tertiary/30'
+        : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline hover:text-on-surface transition-colors font-label-sm text-label-sm border border-[#3d2f26]/30';
+      toggleWind.innerHTML = `<span class="material-symbols-outlined text-[15px] ${windActive ? 'text-tertiary' : 'text-outline'}">air</span><span>Brisa Aerodinámica [${windActive ? 'ON' : 'OFF'}]</span>`;
+    });
+  }
+
+  // Selector de Dirección de Viento
+  const windButtons = document.querySelectorAll('#wind-dir-selector button');
+  windButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      windButtons.forEach(b => {
+        b.className = 'py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] border border-[#3d2f26]/30';
+      });
+      btn.className = 'py-1 rounded bg-tertiary text-surface-container-lowest font-bold text-[10px] shadow';
+    });
+  });
+
+  // Selector de Formas
+  const shapeButtons = document.querySelectorAll('#shape-selector button');
+  shapeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      shapeButtons.forEach(b => {
+        b.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30';
+      });
+      btn.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/40 hover:bg-[#252830] transition-colors group';
+    });
+  });
+
+  // Conmutador Perspectiva 3D vs Planta 2D
+  const btn3D = document.getElementById('view-mode-3d');
+  const btn2D = document.getElementById('view-mode-2d');
+  const cadCanvas = document.getElementById('cad-canvas');
+
+  if (btn2D && btn3D && cadCanvas) {
+    btn2D.addEventListener('click', () => {
+      btn2D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface-container-lowest font-label-md text-label-md font-bold transition-all shadow-md';
+      btn3D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-label-md text-label-md';
+      cadCanvas.style.transform = 'rotateX(50deg) rotateZ(-25deg) scale(0.92)';
+    });
+
+    btn3D.addEventListener('click', () => {
+      btn3D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface-container-lowest font-label-md text-label-md font-bold transition-all shadow-md';
+      btn2D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-label-md text-label-md';
+      cadCanvas.style.transform = 'none';
+    });
+  }
+
+  // Fijar Volumen con [ESPACIO] (PRD REQ)
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      const flashMsg = document.createElement('div');
+      flashMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 px-5 py-2 rounded bg-primary-container text-surface-container-lowest font-label-md text-label-md font-bold shadow-2xl z-50 flex items-center gap-2 border border-primary';
+      flashMsg.innerHTML = '<span class="material-symbols-outlined text-[18px]">verified</span><span>✓ Volumen consolidado. Simulación bioclimática integrada.</span>';
+      document.body.appendChild(flashMsg);
+      setTimeout(() => flashMsg.remove(), 2500);
+    }
+  });
+
+  // Pausa Mental Microinteraction
+  const btnBreathing = document.getElementById('btn-breathing');
+  if (btnBreathing) {
+    btnBreathing.addEventListener('click', () => {
+      btnBreathing.textContent = 'Inhala... Exhala (4s)';
+      setTimeout(() => {
+        btnBreathing.innerHTML = '<span class="material-symbols-outlined text-[12px] text-primary">air</span><span>Pausa Mental</span>';
+      }, 4000);
+    });
+  }
+
+  function selectExistingVolume(nombre, ancho, fondo, alto) {
+    if (sliderAncho) sliderAncho.value = ancho;
+    if (sliderFondo) sliderFondo.value = fondo;
+    if (sliderAlto) sliderAlto.value = alto;
+    updateDimensions();
+
+    const notif = document.createElement('div');
+    notif.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded bg-primary-container text-surface-container-lowest font-label-sm text-label-sm font-bold shadow-2xl z-50 transition-all flex items-center gap-1.5';
+    notif.innerHTML = `<span class="material-symbols-outlined text-[15px]">straighten</span><span>Seleccionado: ${nombre} (${ancho}x${fondo}x${alto}m)</span>`;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 2200);
+  }
+
+  const btnReset = document.getElementById('btn-reset-all');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      if (confirm('¿Restablecer el lienzo y la configuración bioclimática inicial?')) {
+        location.reload();
+      }
+    });
+  }
+</script></main></div></body></html>
