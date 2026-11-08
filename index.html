@@ -162,6 +162,11 @@
             <span>Líneas de Flujo [ON]</span>
           </button>
           <span class="text-[#3d2f26] text-[11px]">|</span>
+          <button id="toggle-grid" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-on-surface hover:text-primary transition-colors font-mono text-xs font-semibold border border-[#3d2f26]/60" title="Ocultar o mostrar retícula y ejes para ver solo los volúmenes">
+            <span class="material-symbols-outlined text-[15px] text-primary">grid_4x4</span>
+            <span>Rejilla & Ejes [ON]</span>
+          </button>
+          <span class="text-[#3d2f26] text-[11px]">|</span>
           <div class="flex items-center gap-1 text-on-surface-variant font-mono text-xs">
             <span class="material-symbols-outlined text-[14px] text-secondary">explore</span>
             <span class="text-secondary font-bold" id="label-norte">NORTE 0°</span>
@@ -432,6 +437,7 @@
       viewMode: '3d',
       solarActive: true,
       windActive: true,
+      gridActive: true,
       hour: 12.0,
       windDir: 'NE',
       activeShape: 'box',
@@ -1193,6 +1199,19 @@
         btnWind.className = state.windActive
           ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-mono text-xs font-semibold border border-tertiary/30'
           : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline font-mono text-xs border border-[#3d2f26]/30';
+      });
+
+      // Toggle Rejilla y Ejes (para ver solo los volúmenes)
+      const btnGrid = document.getElementById('toggle-grid');
+      btnGrid.addEventListener('click', () => {
+        state.gridActive = !state.gridActive;
+        grid.visible = state.gridActive;
+        compassGroup.visible = state.gridActive;
+        btnGrid.className = state.gridActive
+          ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-on-surface hover:text-primary transition-colors font-mono text-xs font-semibold border border-[#3d2f26]/60'
+          : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#111317] text-outline font-mono text-xs border border-[#3d2f26]/30';
+        btnGrid.innerHTML = `<span class="material-symbols-outlined text-[15px] ${state.gridActive ? 'text-primary' : 'text-outline'}">grid_4x4</span><span>Rejilla & Ejes [${state.gridActive ? 'ON' : 'OFF'}]</span>`;
+        showToast(state.gridActive ? 'Rejilla y ejes visibles' : 'Rejilla y ejes ocultos (Solo volúmenes)');
       });
 
       document.getElementById('btn-fix-volume').addEventListener('click', fixCurrentVolume);
