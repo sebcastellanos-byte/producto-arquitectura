@@ -229,34 +229,7 @@
       
       <div class="p-4 flex flex-col gap-4">
 
-        <!-- A. INDICADOR DE SEÑAL CEREBRAL (PRD REQ) -->
-        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[18px] text-tertiary">psychology</span>
-              <span class="font-mono text-xs text-on-surface font-semibold uppercase tracking-wider">Señal Cerebral</span>
-            </div>
-            <button id="btn-breathing" class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#1e2027] hover:bg-[#252830] text-primary transition-colors text-[10px] font-mono border border-primary/30" title="Micro-pausa de respiración">
-              <span class="material-symbols-outlined text-[12px] text-primary">air</span>
-              <span>Pausa Mental</span>
-            </button>
-          </div>
-
-          <!-- Gráfico SVG Onda Cerebral Animada -->
-          <div class="relative w-full h-10 bg-[#0d0e12] rounded border border-[#3d2f26]/40 overflow-hidden flex items-center justify-center">
-            <svg class="w-full h-full" viewBox="0 0 300 40" preserveAspectRatio="none">
-              <path id="brainwave-path" d="M0,20 Q15,5 30,20 T60,20 T90,20 T120,20 T150,20 T180,20 T210,20 T240,20 T270,20 T300,20" fill="none" stroke="#26dcdd" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-[#111317]/90 px-1.5 py-0.5 rounded border border-tertiary/40">
-              <span id="brain-effort-val" class="font-mono text-xs font-bold text-tertiary">64%</span>
-            </div>
-          </div>
-          <span id="brain-effort-desc" class="text-[10px] font-mono text-on-surface-variant text-center">
-            Estado: Enfoque Creativo Fluido • Exploración Espacial Óptima
-          </span>
-        </div>
-
-        <!-- B. SIMULACIÓN BIOCLIMÁTICA: HORA DEL DÍA Y VIENTO -->
+        <!-- A. SIMULACIÓN BIOCLIMÁTICA: HORA DEL DÍA Y VIENTO -->
         <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-3">
           <div class="flex items-center justify-between pb-1 border-b border-[#3d2f26]/40">
             <span class="font-mono text-xs text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
@@ -295,11 +268,17 @@
           </div>
         </div>
 
-        <!-- C. SECCIÓN: VOLUMEN EN CURSO (PRD REQ) -->
-        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-3 shadow-md">
+        <!-- B. SECCIÓN: VOLUMEN ACTIVO / SELECCIONADO -->
+        <div id="volume-panel" class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-3 shadow-md transition-all">
           <div class="flex items-center justify-between pb-1 border-b border-[#3d2f26]/40">
-            <span class="font-mono text-xs text-primary-container font-bold uppercase tracking-wider">// VOLUMEN EN CURSO</span>
-            <span id="active-vol-id" class="font-mono text-xs text-on-surface-variant">#VOL-01</span>
+            <div class="flex items-center gap-1.5">
+              <span id="panel-status-dot" class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+              <span id="panel-title" class="font-mono text-xs text-primary-container font-bold uppercase tracking-wider">// VOLUMEN EN CURSO</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="active-vol-id" class="font-mono text-xs text-primary font-bold px-1.5 py-0.5 rounded bg-[#1e2027] border border-[#3d2f26]">#VOL-01</span>
+              <button id="btn-deselect" class="hidden text-[10px] font-mono text-tertiary hover:underline" title="Desmarcar y crear nuevo">Nuevo +</button>
+            </div>
           </div>
 
           <!-- Selector de Forma Primitiva -->
@@ -372,11 +351,11 @@
           <!-- Botón de Fijar Volumen (Acción principal) -->
           <button id="btn-fix-volume" class="w-full py-2.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,122,26,0.4)] transition-all">
             <span class="material-symbols-outlined text-[16px]">verified</span>
-            <span>FIJAR VOLUMEN [BARRA ESPACIADORA]</span>
+            <span id="btn-fix-text">FIJAR VOLUMEN [BARRA ESPACIADORA]</span>
           </button>
         </div>
 
-        <!-- D. DATOS GENERALES DEL PROYECTO (PRD REQ) -->
+        <!-- C. DATOS GENERALES DEL PROYECTO (PRD REQ) -->
         <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-2">
           <span class="font-mono text-xs text-on-surface font-semibold uppercase tracking-wider">// RESUMEN GENERAL</span>
           
@@ -406,7 +385,7 @@
           </div>
         </div>
 
-        <!-- E. OPCIONES DE CONTROL (INFERIOR DERECHO PRD REQ) -->
+        <!-- D. OPCIONES DE CONTROL (INFERIOR DERECHO PRD REQ) -->
         <div class="flex items-center gap-2 pt-1">
           <button id="btn-undo" class="flex-1 py-2 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface hover:text-primary transition-all border border-[#3d2f26]/60 text-xs font-mono flex items-center justify-center gap-1.5">
             <span class="material-symbols-outlined text-[15px]">undo</span>
@@ -439,8 +418,8 @@
       activeShape: 'box',
       activeDims: { width: 12, depth: 10, height: 9 },
       activePos: { x: 0, z: 0 },
-      placedVolumes: [],
-      selectedVolumeId: null,
+      placedVolumes: [], // { id, shape, width, depth, height, x, z, mesh, edges }
+      selectedVolume: null, // Volumen seleccionado actualmente
       history: [],
       volCounter: 1
     };
@@ -536,6 +515,13 @@
     const windParticles = new THREE.Points(windGeo, windMat);
     scene.add(windParticles);
 
+    // --- RECUADRO VISUAL DE SELECCIÓN EN 3D ---
+    const dummyGeo = new THREE.BoxGeometry(1, 1, 1);
+    const dummyMesh = new THREE.Mesh(dummyGeo);
+    const selectionBox = new THREE.BoxHelper(dummyMesh, 0x26dcdd);
+    selectionBox.visible = false;
+    scene.add(selectionBox);
+
     // --- VOLUMEN ACTIVO (EN CURSO) ---
     let activeMesh = null;
     let activeEdges = null;
@@ -592,9 +578,108 @@
       updateMetrics();
     }
 
+    // --- SELECCIÓN Y DESELECCIÓN DE VOLÚMENES ---
+    function selectVolume(vol) {
+      state.selectedVolume = vol;
+
+      // Actualizar caja de selección visual en 3D
+      selectionBox.setFromObject(vol.mesh);
+      selectionBox.visible = true;
+
+      // Resaltar panel derecho
+      document.getElementById('panel-title').textContent = `// VOLUMEN SELECCIONADO`;
+      document.getElementById('panel-title').className = "font-mono text-xs text-tertiary font-bold uppercase tracking-wider";
+      document.getElementById('panel-status-dot').className = "w-2 h-2 rounded-full bg-tertiary animate-ping";
+      document.getElementById('active-vol-id').textContent = `#${vol.id}`;
+      document.getElementById('active-vol-id').className = "font-mono text-xs text-tertiary font-bold px-1.5 py-0.5 rounded bg-tertiary/20 border border-tertiary/50";
+      document.getElementById('btn-deselect').classList.remove('hidden');
+      document.getElementById('btn-fix-text').textContent = 'DUPLICAR VOLUMEN [ESPACIO]';
+
+      // Sincronizar sliders con los datos del volumen seleccionado
+      document.getElementById('slider-ancho').value = vol.width;
+      document.getElementById('val-ancho').textContent = `${vol.width} m`;
+
+      document.getElementById('slider-fondo').value = vol.depth;
+      document.getElementById('val-fondo').textContent = `${vol.depth} m`;
+
+      document.getElementById('slider-alto').value = vol.height;
+      const floors = Math.round(vol.height / 3.0);
+      document.getElementById('val-alto').textContent = `${vol.height} m (${floors} plantas)`;
+
+      document.getElementById('input-pos-x').value = vol.x;
+      document.getElementById('input-pos-z').value = vol.z;
+
+      // Actualizar botón de forma activa
+      updateShapeButtonsUI(vol.shape);
+
+      showToast(`Seleccionado: #${vol.id} (${vol.width}x${vol.depth}x${vol.height}m)`);
+    }
+
+    function deselectVolume() {
+      state.selectedVolume = null;
+      selectionBox.visible = false;
+
+      document.getElementById('panel-title').textContent = `// VOLUMEN EN CURSO`;
+      document.getElementById('panel-title').className = "font-mono text-xs text-primary-container font-bold uppercase tracking-wider";
+      document.getElementById('panel-status-dot').className = "w-2 h-2 rounded-full bg-primary-container animate-pulse";
+      document.getElementById('active-vol-id').textContent = `#VOL-${String(state.volCounter).padStart(2, '0')}`;
+      document.getElementById('active-vol-id').className = "font-mono text-xs text-primary font-bold px-1.5 py-0.5 rounded bg-[#1e2027] border border-[#3d2f26]";
+      document.getElementById('btn-deselect').classList.add('hidden');
+      document.getElementById('btn-fix-text').textContent = 'FIJAR VOLUMEN [BARRA ESPACIADORA]';
+
+      // Restaurar sliders a las medidas del nuevo volumen activo
+      document.getElementById('slider-ancho').value = state.activeDims.width;
+      document.getElementById('val-ancho').textContent = `${state.activeDims.width} m`;
+      document.getElementById('slider-fondo').value = state.activeDims.depth;
+      document.getElementById('val-fondo').textContent = `${state.activeDims.depth} m`;
+      document.getElementById('slider-alto').value = state.activeDims.height;
+      document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+      document.getElementById('input-pos-x').value = state.activePos.x;
+      document.getElementById('input-pos-z').value = state.activePos.z;
+
+      updateShapeButtonsUI(state.activeShape);
+    }
+
+    function updateSelectedVolumeGeometry() {
+      if (!state.selectedVolume) return;
+      const vol = state.selectedVolume;
+
+      // Reconstruir geometría del volumen seleccionado
+      const newGeom = createGeometry(vol.shape, vol.width, vol.depth, vol.height);
+      vol.mesh.geometry.dispose();
+      vol.mesh.geometry = newGeom;
+      vol.mesh.position.set(vol.x, vol.height / 2, vol.z);
+
+      if (vol.edges) {
+        vol.edges.geometry.dispose();
+        vol.edges.geometry = new THREE.EdgesGeometry(newGeom);
+      }
+
+      selectionBox.setFromObject(vol.mesh);
+      updateMetrics();
+    }
+
+    function updateShapeButtonsUI(shape) {
+      const shapeButtons = document.querySelectorAll('#shape-selector button');
+      shapeButtons.forEach(btn => {
+        if (btn.dataset.shape === shape) {
+          btn.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/50 hover:bg-[#252830] transition-colors group';
+        } else {
+          btn.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30';
+        }
+      });
+    }
+
     // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (PRD REQ) ---
     function fixCurrentVolume() {
-      const geom = createGeometry(state.activeShape, state.activeDims.width, state.activeDims.depth, state.activeDims.height);
+      const shape = state.selectedVolume ? state.selectedVolume.shape : state.activeShape;
+      const w = state.selectedVolume ? state.selectedVolume.width : state.activeDims.width;
+      const d = state.selectedVolume ? state.selectedVolume.depth : state.activeDims.depth;
+      const h = state.selectedVolume ? state.selectedVolume.height : state.activeDims.height;
+      const posX = state.selectedVolume ? state.selectedVolume.x + 3 : state.activePos.x;
+      const posZ = state.selectedVolume ? state.selectedVolume.z + 3 : state.activePos.z;
+
+      const geom = createGeometry(shape, w, d, h);
       const palette = [0xffd799, 0xffb68e, 0xe3e2e6, 0xefc4b0];
       const volColor = palette[state.placedVolumes.length % palette.length];
 
@@ -607,7 +692,7 @@
       const mesh = new THREE.Mesh(geom, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      mesh.position.set(state.activePos.x, state.activeDims.height / 2, state.activePos.z);
+      mesh.position.set(posX, h / 2, posZ);
       
       const edgesGeom = new THREE.EdgesGeometry(geom);
       const edges = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x584236, linewidth: 1.5 }));
@@ -617,13 +702,14 @@
 
       const volRecord = {
         id: `VOL-${String(state.volCounter).padStart(2, '0')}`,
-        shape: state.activeShape,
-        width: state.activeDims.width,
-        depth: state.activeDims.depth,
-        height: state.activeDims.height,
-        x: state.activePos.x,
-        z: state.activePos.z,
-        mesh: mesh
+        shape: shape,
+        width: w,
+        depth: d,
+        height: h,
+        x: posX,
+        z: posZ,
+        mesh: mesh,
+        edges: edges
       };
 
       mesh.userData = { id: volRecord.id };
@@ -633,7 +719,10 @@
 
       showToast(`✓ Volumen #${volRecord.id} fijado. Simulación bioclimática integrada.`);
 
-      // Desplazar ligeramente la siguiente pieza para seguir modelando fluido
+      // Deseleccionar si había uno seleccionado para volver al nuevo activo
+      deselectVolume();
+
+      // Desplazar posición del siguiente volumen para no encimar
       state.activePos.x += (state.activeDims.width / 2 + 3);
       if (state.activePos.x > 25) {
         state.activePos.x = -15;
@@ -654,9 +743,12 @@
       }
       const last = state.history.pop();
       if (last.action === 'add') {
+        if (state.selectedVolume && state.selectedVolume.id === last.volume.id) {
+          deselectVolume();
+        }
         scene.remove(last.volume.mesh);
         state.placedVolumes = state.placedVolumes.filter(v => v.id !== last.volume.id);
-        showToast(`Deshecho: Se eliminó ${last.volume.id}`);
+        showToast(`Deshecho: Se eliminó #${last.volume.id}`);
         updateMetrics();
       }
     }
@@ -664,6 +756,7 @@
     // --- LIMPIAR TODO (RESET) ---
     function resetAll() {
       if (confirm('¿Restablecer el lienzo y eliminar todos los volúmenes?')) {
+        deselectVolume();
         state.placedVolumes.forEach(v => scene.remove(v.mesh));
         state.placedVolumes = [];
         state.history = [];
@@ -680,7 +773,7 @@
     // --- ACTUALIZAR MÉTRICAS GENERALES EN TIEMPO REAL ---
     function updateMetrics() {
       const allVolumes = [...state.placedVolumes];
-      if (activeMesh) {
+      if (activeMesh && !state.selectedVolume) {
         allVolumes.push({
           width: state.activeDims.width,
           depth: state.activeDims.depth,
@@ -704,18 +797,6 @@
       document.getElementById('metric-footprint').textContent = `${Math.round(totalFootprint)} m²`;
       document.getElementById('metric-built-area').textContent = `${Math.round(totalBuiltArea)} m²`;
       document.getElementById('metric-total-vol').textContent = `${Math.round(totalVolume).toLocaleString()} m³`;
-
-      // Calcular esfuerzo mental dinámico (Señal Cerebral PRD)
-      const effort = Math.min(95, Math.max(35, 40 + allVolumes.length * 7));
-      document.getElementById('brain-effort-val').textContent = `${effort}%`;
-      const desc = document.getElementById('brain-effort-desc');
-      if (effort < 55) {
-        desc.textContent = 'Estado: Exploración Inicial • Carga Cognitiva Baja';
-      } else if (effort < 75) {
-        desc.textContent = 'Estado: Enfoque Creativo Fluido • Ideación Espacial Óptima';
-      } else {
-        desc.textContent = 'Estado: Alta Densidad • Monitoreo de Asoleamiento y Confort Térmico';
-      }
     }
 
     // --- CÁLCULO DE ASOLEAMIENTO SOLAR ---
@@ -759,30 +840,42 @@
       NO: { x: 0.7, z: -0.7 }
     };
 
-    // --- SELECCIÓN POR CLICK EN MODELO 3D (RAYCASTING) ---
+    // --- SELECCIÓN POR CLICK EN MODELO 3D (RAYCASTING CORREGIDO) ---
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    let pointerDownCoord = { x: 0, y: 0 };
 
-    window.addEventListener('click', (e) => {
-      if (e.clientX > window.innerWidth - 384 || e.clientY < 56) return;
+    canvas.addEventListener('pointerdown', (e) => {
+      pointerDownCoord = { x: e.clientX, y: e.clientY };
+    });
 
-      mouse.x = (e.clientX / container.clientWidth) * 2 - 1;
-      mouse.y = -(e.clientY / container.clientHeight) * 2 + 1;
+    canvas.addEventListener('pointerup', (e) => {
+      // Si el usuario arrastró el mouse para rotar la cámara, no cambiar la selección
+      const dist = Math.hypot(e.clientX - pointerDownCoord.x, e.clientY - pointerDownCoord.y);
+      if (dist > 6) return;
+
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
+
       const placedMeshes = state.placedVolumes.map(v => v.mesh);
-      const intersects = raycaster.intersectObjects(placedMeshes);
+      const intersects = raycaster.intersectObjects(placedMeshes, false);
 
       if (intersects.length > 0) {
         const hitMesh = intersects[0].object;
         const volId = hitMesh.userData.id;
-        state.selectedVolumeId = volId;
         const vol = state.placedVolumes.find(v => v.id === volId);
         if (vol) {
-          showToast(`Volumen #${vol.id} seleccionado (${vol.width}x${vol.depth}x${vol.height}m)`);
+          selectVolume(vol);
         }
       } else {
-        state.selectedVolumeId = null;
+        // Clic en el suelo vacío: deseleccionar
+        if (state.selectedVolume) {
+          deselectVolume();
+          showToast('Selección desmarcada');
+        }
       }
     });
 
@@ -807,15 +900,9 @@
         windGeo.attributes.position.needsUpdate = true;
       }
 
-      const brainPath = document.getElementById('brainwave-path');
-      if (brainPath) {
-        const time = Date.now() * 0.003;
-        let d = 'M0,20 ';
-        for (let x = 0; x <= 300; x += 30) {
-          const y = 20 + Math.sin(time + x * 0.05) * 8;
-          d += `Q${x + 15},${y} ${x + 30},20 `;
-        }
-        brainPath.setAttribute('d', d);
+      // Mantener caja de selección alineada
+      if (state.selectedVolume && selectionBox.visible) {
+        selectionBox.setFromObject(state.selectedVolume.mesh);
       }
 
       renderer.render(scene, camera);
@@ -828,42 +915,76 @@
       const sAlto = document.getElementById('slider-alto');
 
       sAncho.addEventListener('input', (e) => {
-        state.activeDims.width = parseFloat(e.target.value);
-        document.getElementById('val-ancho').textContent = `${state.activeDims.width} m`;
-        updateActiveVolumeMesh();
+        const val = parseFloat(e.target.value);
+        document.getElementById('val-ancho').textContent = `${val} m`;
+        if (state.selectedVolume) {
+          state.selectedVolume.width = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activeDims.width = val;
+          updateActiveVolumeMesh();
+        }
       });
 
       sFondo.addEventListener('input', (e) => {
-        state.activeDims.depth = parseFloat(e.target.value);
-        document.getElementById('val-fondo').textContent = `${state.activeDims.depth} m`;
-        updateActiveVolumeMesh();
+        const val = parseFloat(e.target.value);
+        document.getElementById('val-fondo').textContent = `${val} m`;
+        if (state.selectedVolume) {
+          state.selectedVolume.depth = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activeDims.depth = val;
+          updateActiveVolumeMesh();
+        }
       });
 
       sAlto.addEventListener('input', (e) => {
-        state.activeDims.height = parseFloat(e.target.value);
-        const floors = Math.round(state.activeDims.height / 3.0);
-        document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${floors} plantas)`;
-        updateActiveVolumeMesh();
+        const val = parseFloat(e.target.value);
+        const floors = Math.round(val / 3.0);
+        document.getElementById('val-alto').textContent = `${val} m (${floors} plantas)`;
+        if (state.selectedVolume) {
+          state.selectedVolume.height = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activeDims.height = val;
+          updateActiveVolumeMesh();
+        }
       });
 
       document.getElementById('input-pos-x').addEventListener('input', (e) => {
-        state.activePos.x = parseFloat(e.target.value) || 0;
-        updateActiveVolumeMesh();
+        const val = parseFloat(e.target.value) || 0;
+        if (state.selectedVolume) {
+          state.selectedVolume.x = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activePos.x = val;
+          updateActiveVolumeMesh();
+        }
       });
+
       document.getElementById('input-pos-z').addEventListener('input', (e) => {
-        state.activePos.z = parseFloat(e.target.value) || 0;
-        updateActiveVolumeMesh();
+        const val = parseFloat(e.target.value) || 0;
+        if (state.selectedVolume) {
+          state.selectedVolume.z = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activePos.z = val;
+          updateActiveVolumeMesh();
+        }
       });
 
       const shapeButtons = document.querySelectorAll('#shape-selector button');
       shapeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          shapeButtons.forEach(b => {
-            b.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30';
-          });
-          btn.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/50 hover:bg-[#252830] transition-colors group';
-          state.activeShape = btn.dataset.shape;
-          updateActiveVolumeMesh();
+          const shape = btn.dataset.shape;
+          updateShapeButtonsUI(shape);
+          if (state.selectedVolume) {
+            state.selectedVolume.shape = shape;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activeShape = shape;
+            updateActiveVolumeMesh();
+          }
         });
       });
 
@@ -907,32 +1028,21 @@
       });
 
       document.getElementById('btn-fix-volume').addEventListener('click', fixCurrentVolume);
+      document.getElementById('btn-deselect').addEventListener('click', deselectVolume);
 
       document.getElementById('btn-undo').addEventListener('click', undoLast);
       document.getElementById('btn-reset-all').addEventListener('click', resetAll);
       document.getElementById('btn-delete-selected').addEventListener('click', () => {
-        if (!state.selectedVolumeId) {
+        if (!state.selectedVolume) {
           showToast('Selecciona primero un volumen en el visor 3D para eliminarlo');
           return;
         }
-        const vol = state.placedVolumes.find(v => v.id === state.selectedVolumeId);
-        if (vol) {
-          scene.remove(vol.mesh);
-          state.placedVolumes = state.placedVolumes.filter(v => v.id !== state.selectedVolumeId);
-          showToast(`Volumen #${state.selectedVolumeId} eliminado`);
-          state.selectedVolumeId = null;
-          updateMetrics();
-        }
-      });
-
-      const btnBreathe = document.getElementById('btn-breathing');
-      btnBreathe.addEventListener('click', () => {
-        btnBreathe.textContent = 'Inhala... Exhala (4s)';
-        btnBreathe.classList.add('bg-tertiary/20', 'text-tertiary');
-        setTimeout(() => {
-          btnBreathe.innerHTML = '<span class="material-symbols-outlined text-[12px] text-primary">air</span><span>Pausa Mental</span>';
-          btnBreathe.classList.remove('bg-tertiary/20', 'text-tertiary');
-        }, 4000);
+        const vol = state.selectedVolume;
+        scene.remove(vol.mesh);
+        state.placedVolumes = state.placedVolumes.filter(v => v.id !== vol.id);
+        showToast(`Volumen #${vol.id} eliminado`);
+        deselectVolume();
+        updateMetrics();
       });
 
       const btn3D = document.getElementById('view-mode-3d');
@@ -965,7 +1075,7 @@
       });
 
       document.getElementById('btn-export-report').addEventListener('click', () => {
-        const totalVols = state.placedVolumes.length + 1;
+        const totalVols = state.placedVolumes.length + (state.selectedVolume ? 0 : 1);
         const totalFP = document.getElementById('metric-footprint').textContent;
         const totalConst = document.getElementById('metric-built-area').textContent;
         const totalVol = document.getElementById('metric-total-vol').textContent;
@@ -982,8 +1092,7 @@
                        `   - Simulación Solar Activa: ${state.solarActive ? 'SÍ' : 'NO'}\n` +
                        `   - Hora Analizada: ${document.getElementById('label-hora-live').textContent}\n` +
                        `   - Ángulos Solares: ${document.getElementById('label-solar-angles').textContent}\n` +
-                       `   - Dirección Predominante del Viento: ${state.windDir}\n` +
-                       `   - Índice de Esfuerzo Cognitivo: ${document.getElementById('brain-effort-val').textContent}\n\n` +
+                       `   - Dirección Predominante del Viento: ${state.windDir}\n\n` +
                        `Generado automáticamente desde Trazo Mental.\n` +
                        `========================================================`;
         
@@ -1002,33 +1111,71 @@
           e.preventDefault();
           fixCurrentVolume();
         } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-          state.activePos.x += 1;
-          document.getElementById('input-pos-x').value = state.activePos.x;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.x += 1;
+            document.getElementById('input-pos-x').value = state.selectedVolume.x;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activePos.x += 1;
+            document.getElementById('input-pos-x').value = state.activePos.x;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-          state.activePos.x -= 1;
-          document.getElementById('input-pos-x').value = state.activePos.x;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.x -= 1;
+            document.getElementById('input-pos-x').value = state.selectedVolume.x;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activePos.x -= 1;
+            document.getElementById('input-pos-x').value = state.activePos.x;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-          state.activePos.z -= 1;
-          document.getElementById('input-pos-z').value = state.activePos.z;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.z -= 1;
+            document.getElementById('input-pos-z').value = state.selectedVolume.z;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activePos.z -= 1;
+            document.getElementById('input-pos-z').value = state.activePos.z;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-          state.activePos.z += 1;
-          document.getElementById('input-pos-z').value = state.activePos.z;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.z += 1;
+            document.getElementById('input-pos-z').value = state.selectedVolume.z;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activePos.z += 1;
+            document.getElementById('input-pos-z').value = state.activePos.z;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'r' || e.key === 'R') {
-          state.activeDims.height = Math.min(36, state.activeDims.height + 3);
-          document.getElementById('slider-alto').value = state.activeDims.height;
-          document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.height = Math.min(36, state.selectedVolume.height + 3);
+            document.getElementById('slider-alto').value = state.selectedVolume.height;
+            document.getElementById('val-alto').textContent = `${state.selectedVolume.height} m (${Math.round(state.selectedVolume.height/3)} plantas)`;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activeDims.height = Math.min(36, state.activeDims.height + 3);
+            document.getElementById('slider-alto').value = state.activeDims.height;
+            document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'f' || e.key === 'F') {
-          state.activeDims.height = Math.max(3, state.activeDims.height - 3);
-          document.getElementById('slider-alto').value = state.activeDims.height;
-          document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
-          updateActiveVolumeMesh();
+          if (state.selectedVolume) {
+            state.selectedVolume.height = Math.max(3, state.selectedVolume.height - 3);
+            document.getElementById('slider-alto').value = state.selectedVolume.height;
+            document.getElementById('val-alto').textContent = `${state.selectedVolume.height} m (${Math.round(state.selectedVolume.height/3)} plantas)`;
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activeDims.height = Math.max(3, state.activeDims.height - 3);
+            document.getElementById('slider-alto').value = state.activeDims.height;
+            document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+            updateActiveVolumeMesh();
+          }
         } else if (e.key === 'Delete' || e.key === 'Backspace') {
-          if (state.selectedVolumeId) {
+          if (state.selectedVolume) {
             document.getElementById('btn-delete-selected').click();
           }
         }
