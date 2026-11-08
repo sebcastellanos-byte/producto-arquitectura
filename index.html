@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trazo Mental - Modelador Arquitectónico Bioclimático</title>
+  
+  <!-- Google Fonts & Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#0d0e12",
+            "surface-dim": "#0d0e12",
+            "surface-bright": "#2a2c35",
+            "surface-container": "#16181d",
+            "surface-container-low": "#111317",
+            "surface-container-high": "#1e2027",
+            "surface-container-highest": "#252830",
+            primary: "#ffb68e",
+            "primary-container": "#ff7a1a",
+            "on-primary": "#542200",
+            secondary: "#ffd799",
+            tertiary: "#26dcdd",
+            outline: "#877063",
+            "outline-variant": "#3d2f26",
+            "on-surface": "#e3e2e6",
+            "on-surface-variant": "#d4b2a3"
+          },
+          fontFamily: {
+            sans: ["Space Grotesk", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+            inter: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Three.js & OrbitControls for real 3D modeling -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0d0e12;
+      color: #e3e2e6;
+      overflow: hidden;
+      user-select: none;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111317;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3d2f26;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff7a1a;
+    }
+    .custom-range {
+      accent-color: #ff7a1a;
+    }
+  </style>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased flex flex-col h-screen">
+
+  <!-- ==================== HEADER SUPERIOR ==================== -->
+  <header class="h-14 bg-[#0a0b0e] border-b border-[#3d2f26]/60 z-50 flex items-center justify-between px-5 shadow-2xl flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#ff7a1a] to-[#542200] flex items-center justify-center shadow-[0_0_15px_rgba(255,122,26,0.5)] border border-primary/40">
+        <span class="material-symbols-outlined text-white text-[22px]">architecture</span>
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[17px] tracking-tight text-primary font-bold uppercase drop-shadow-[0_0_10px_rgba(255,182,142,0.3)]">Trazo Mental</span>
+          <span class="px-1.5 py-0.5 rounded bg-[#1e2027] text-on-surface-variant border border-[#3d2f26]/60 text-[10px] font-mono">v1.2 · Grupo 29</span>
+        </div>
+        <span class="text-[11px] text-on-surface-variant flex items-center gap-1 font-inter">
+          <span class="material-symbols-outlined text-[13px] text-primary-container">energy_savings_leaf</span>
+          Modelado Volumétrico & Análisis Bioclimático en Tiempo Real
+        </span>
+      </div>
+    </div>
+
+    <!-- Acciones en el Header -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1 bg-[#16181d] rounded border border-[#3d2f26]/60">
+        <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#ff7a1a]"></span>
+        <span class="text-[11px] font-mono text-on-surface-variant">Motor 3D:</span>
+        <span class="text-[11px] font-mono text-primary font-bold">ACTIVO</span>
+      </div>
+
+      <div class="h-4 w-[1px] bg-[#3d2f26]/60"></div>
+
+      <button id="btn-export-report" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface hover:text-primary transition-all border border-[#3d2f26]/60 text-xs font-mono" title="Descargar resumen de métricas">
+        <span class="material-symbols-outlined text-[15px]">file_download</span>
+        <span>Reporte Bioclimático</span>
+      </button>
+
+      <button id="btn-screenshot" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-semibold transition-all shadow-[0_0_15px_rgba(255,122,26,0.4)] text-xs font-mono" title="Tomar captura del modelo">
+        <span class="material-symbols-outlined text-[15px]">photo_camera</span>
+        <span>Captura Asoleamiento</span>
+      </button>
+
+      <div class="h-4 w-[1px] bg-[#3d2f26]/60"></div>
+
+      <div class="flex items-center gap-2 pl-1">
+        <div class="flex flex-col items-end">
+          <span class="text-xs text-on-surface font-medium">Estudio Arquitectura</span>
+          <span class="text-[10px] text-secondary font-mono">SIMULACIÓN SOLAR & VIENTO</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary-container text-surface flex items-center justify-center font-bold shadow-[0_0_12px_rgba(255,122,26,0.4)]">
+          <span class="material-symbols-outlined text-[18px]">wb_sunny</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== ÁREA DE TRABAJO PRINCIPAL ==================== -->
+  <div class="relative flex-1 flex overflow-hidden">
+
+    <!-- 1. VIEWPORT 3D CENTRAL -->
+    <div id="viewport-container" class="relative flex-1 h-full overflow-hidden bg-[#0d0e12] select-none">
+      
+      <!-- Canvas 3D de Three.js -->
+      <canvas id="three-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+      <!-- SUPERIOR IZQUIERDA: Herramientas de Vista y Toggles Bioclimáticos -->
+      <div class="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
+        <!-- Selector Modo de Vista -->
+        <div class="flex items-center gap-1.5 p-1 bg-[#16181d]/90 backdrop-blur-md rounded border border-[#3d2f26]/70 shadow-2xl">
+          <button id="view-mode-3d" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface font-mono text-xs font-bold transition-all shadow-md">
+            <span class="material-symbols-outlined text-[16px]">wb_sunny</span>
+            <span>Heliodón 3D</span>
+            <span class="text-[9px] px-1 py-0.2 rounded bg-black/30 font-mono">SOL VIVO</span>
+          </button>
+          <button id="view-mode-2d" class="flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-mono text-xs">
+            <span class="material-symbols-outlined text-[16px]">view_quilt</span>
+            <span>Planta 2D / Rosa</span>
+            <span class="text-[9px] px-1 py-0.2 rounded bg-[#252830] text-tertiary font-mono">CÉNIT</span>
+          </button>
+        </div>
+
+        <!-- Barra Rápida de Capas Bioclimáticas -->
+        <div class="flex items-center gap-2 px-3 py-1.5 bg-[#16181d]/90 backdrop-blur-md rounded border border-[#3d2f26]/70 shadow-xl w-fit">
+          <button id="toggle-solar" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/20 text-primary hover:bg-primary-container/30 transition-colors font-mono text-xs font-semibold border border-primary-container/30">
+            <span class="material-symbols-outlined text-[15px] text-primary-container">light_mode</span>
+            <span>Bóveda Solar [ON]</span>
+          </button>
+          <span class="text-[#3d2f26] text-[11px]">|</span>
+          <button id="toggle-wind" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-mono text-xs font-semibold border border-tertiary/30">
+            <span class="material-symbols-outlined text-[15px] text-tertiary">air</span>
+            <span>Brisa Viento [ON]</span>
+          </button>
+          <span class="text-[#3d2f26] text-[11px]">|</span>
+          <div class="flex items-center gap-1 text-on-surface-variant font-mono text-xs">
+            <span class="material-symbols-outlined text-[14px] text-secondary">explore</span>
+            <span class="text-secondary font-bold" id="label-norte">NORTE 0°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUPERIOR DERECHA VIEWPORT: Info Solar en Tiempo Real -->
+      <div class="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
+        <div class="px-3 py-1.5 bg-[#16181d]/95 border border-[#3d2f26]/70 backdrop-blur-md rounded shadow-2xl text-on-surface-variant font-mono text-xs flex items-center gap-3">
+          <div class="flex items-center gap-1.5 text-primary font-semibold">
+            <span class="material-symbols-outlined text-[16px] text-primary-container">schedule</span>
+            <span id="label-hora-live">12:00 PM</span>
+            <span class="text-[9px] text-outline px-1 rounded bg-[#0a0b0e] border border-[#3d2f26]/40">EQUINOCCIO</span>
+          </div>
+          <span class="text-[#3d2f26]">|</span>
+          <div class="flex items-center gap-1.5 text-secondary">
+            <span class="material-symbols-outlined text-[16px]">sunny</span>
+            <span id="label-solar-angles">AZIMUT 180° • ALT 70°</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#ff7a1a]"></span>
+        </div>
+      </div>
+
+      <!-- INFERIOR IZQUIERDA: Guía rápida de atajos de teclado del PRD -->
+      <div class="absolute bottom-4 left-4 z-20 pointer-events-auto bg-[#16181d]/90 backdrop-blur-md p-3 rounded border border-[#3d2f26]/70 shadow-2xl max-w-sm">
+        <div class="flex items-center justify-between pb-1.5 border-b border-[#3d2f26]/40 mb-2">
+          <span class="font-mono text-[11px] text-primary-container font-bold uppercase tracking-wider flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">keyboard</span> Comandos y Atajos (PRD)
+          </span>
+          <span class="text-[10px] text-on-surface-variant font-mono">EN VIVO</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] font-mono text-on-surface-variant">
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-primary border border-[#3d2f26] font-bold">[ESPACIO]</kbd>
+            <span>Fijar volumen</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-on-surface border border-[#3d2f26]">[WASD/Flechas]</kbd>
+            <span>Mover eje X/Z</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-on-surface border border-[#3d2f26]">[R] / [F]</kbd>
+            <span>Subir/Bajar alto</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-red-400 border border-[#3d2f26]">[Supr/Del]</kbd>
+            <span>Eliminar pieza</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje Toast Flotante para notificaciones -->
+      <div id="toast-container" class="absolute top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+    </div>
+
+    <!-- ==================== 2. PANEL DE CONTROL DERECHO ==================== -->
+    <aside class="w-96 bg-[#111317] border-l border-[#3d2f26]/60 z-30 flex flex-col h-full shadow-2xl overflow-y-auto flex-shrink-0">
+      
+      <div class="p-4 flex flex-col gap-4">
+
+        <!-- A. INDICADOR DE SEÑAL CEREBRAL (PRD REQ) -->
+        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-tertiary">psychology</span>
+              <span class="font-mono text-xs text-on-surface font-semibold uppercase tracking-wider">Señal Cerebral</span>
+            </div>
+            <button id="btn-breathing" class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#1e2027] hover:bg-[#252830] text-primary transition-colors text-[10px] font-mono border border-primary/30" title="Micro-pausa de respiración">
+              <span class="material-symbols-outlined text-[12px] text-primary">air</span>
+              <span>Pausa Mental</span>
+            </button>
+          </div>
+
+          <!-- Gráfico SVG Onda Cerebral Animada -->
+          <div class="relative w-full h-10 bg-[#0d0e12] rounded border border-[#3d2f26]/40 overflow-hidden flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 300 40" preserveAspectRatio="none">
+              <path id="brainwave-path" d="M0,20 Q15,5 30,20 T60,20 T90,20 T120,20 T150,20 T180,20 T210,20 T240,20 T270,20 T300,20" fill="none" stroke="#26dcdd" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-[#111317]/90 px-1.5 py-0.5 rounded border border-tertiary/40">
+              <span id="brain-effort-val" class="font-mono text-xs font-bold text-tertiary">64%</span>
+            </div>
+          </div>
+          <span id="brain-effort-desc" class="text-[10px] font-mono text-on-surface-variant text-center">
+            Estado: Enfoque Creativo Fluido • Exploración Espacial Óptima
+          </span>
+        </div>
+
+        <!-- B. SIMULACIÓN BIOCLIMÁTICA: HORA DEL DÍA Y VIENTO -->
+        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-1 border-b border-[#3d2f26]/40">
+            <span class="font-mono text-xs text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-primary">wb_sunny</span>
+              Asoleamiento & Viento
+            </span>
+            <span id="label-hora-slider" class="font-mono text-xs text-primary-container font-semibold">12:00 PM</span>
+          </div>
+
+          <!-- Slider de Hora Solar -->
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between text-[11px] font-mono text-on-surface-variant">
+              <span>06:00 AM</span>
+              <span>12:00 PM</span>
+              <span>06:00 PM</span>
+            </div>
+            <input id="slider-hora" type="range" min="6" max="18" step="0.25" value="12" class="w-full custom-range cursor-pointer"/>
+          </div>
+
+          <!-- Selector de Dirección Predominante del Viento -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-mono text-[10px] text-outline uppercase tracking-wider flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px] text-tertiary">air</span>
+              Dirección del Viento
+            </label>
+            <div id="wind-dir-selector" class="grid grid-cols-4 gap-1">
+              <button data-dir="N" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">N</button>
+              <button data-dir="NE" class="py-1 rounded bg-tertiary text-surface font-bold text-[10px] font-mono shadow">NE</button>
+              <button data-dir="E" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">E</button>
+              <button data-dir="SE" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">SE</button>
+              <button data-dir="S" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">S</button>
+              <button data-dir="SO" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">SO</button>
+              <button data-dir="O" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">O</button>
+              <button data-dir="NO" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">NO</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- C. SECCIÓN: VOLUMEN EN CURSO (PRD REQ) -->
+        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 flex flex-col gap-3 shadow-md">
+          <div class="flex items-center justify-between pb-1 border-b border-[#3d2f26]/40">
+            <span class="font-mono text-xs text-primary-container font-bold uppercase tracking-wider">// VOLUMEN EN CURSO</span>
+            <span id="active-vol-id" class="font-mono text-xs text-on-surface-variant">#VOL-01</span>
+          </div>
+
+          <!-- Selector de Forma Primitiva -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-mono text-[10px] text-outline uppercase tracking-wider">Forma Primitiva</label>
+            <div id="shape-selector" class="grid grid-cols-4 gap-1.5">
+              <button data-shape="box" class="flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/50 hover:bg-[#252830] transition-colors group">
+                <span class="material-symbols-outlined text-[20px]">check_box_outline_blank</span>
+                <span class="font-mono text-[9px] mt-1 font-semibold">Prisma</span>
+              </button>
+              <button data-shape="cylinder" class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30">
+                <span class="material-symbols-outlined text-[20px]">database</span>
+                <span class="font-mono text-[9px] mt-1">Cilindro</span>
+              </button>
+              <button data-shape="wedge" class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30">
+                <span class="material-symbols-outlined text-[20px]">change_history</span>
+                <span class="font-mono text-[9px] mt-1">Cuña</span>
+              </button>
+              <button data-shape="lshape" class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30">
+                <span class="material-symbols-outlined text-[20px]">polyline</span>
+                <span class="font-mono text-[9px] mt-1">Torre L</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sliders de Dimensiones (Ancho, Fondo, Alto en metros) -->
+          <div class="flex flex-col gap-2.5">
+            <!-- Ancho (X) -->
+            <div class="flex flex-col gap-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-on-surface-variant">Ancho (X):</span>
+                <span id="val-ancho" class="text-primary font-bold">12.0 m</span>
+              </div>
+              <input id="slider-ancho" type="range" min="2" max="30" step="0.5" value="12" class="w-full custom-range cursor-pointer"/>
+            </div>
+
+            <!-- Fondo (Z) -->
+            <div class="flex flex-col gap-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-on-surface-variant">Fondo (Z):</span>
+                <span id="val-fondo" class="text-primary font-bold">10.0 m</span>
+              </div>
+              <input id="slider-fondo" type="range" min="2" max="30" step="0.5" value="10" class="w-full custom-range cursor-pointer"/>
+            </div>
+
+            <!-- Alto (Y) -->
+            <div class="flex flex-col gap-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-on-surface-variant">Alto (Y):</span>
+                <span id="val-alto" class="text-primary font-bold">9.0 m (3 plantas)</span>
+              </div>
+              <input id="slider-alto" type="range" min="3" max="36" step="3" value="9" class="w-full custom-range cursor-pointer"/>
+            </div>
+          </div>
+
+          <!-- Posición en la Retícula (X, Z) -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div class="flex items-center gap-1.5 p-1.5 bg-[#0d0e12] rounded border border-[#3d2f26]/40">
+              <span class="text-[10px] font-mono text-outline">Pos X:</span>
+              <input id="input-pos-x" type="number" step="1" value="0" class="w-full bg-transparent text-xs font-mono text-on-surface focus:outline-none"/>
+              <span class="text-[10px] font-mono text-outline">m</span>
+            </div>
+            <div class="flex items-center gap-1.5 p-1.5 bg-[#0d0e12] rounded border border-[#3d2f26]/40">
+              <span class="text-[10px] font-mono text-outline">Pos Z:</span>
+              <input id="input-pos-z" type="number" step="1" value="0" class="w-full bg-transparent text-xs font-mono text-on-surface focus:outline-none"/>
+              <span class="text-[10px] font-mono text-outline">m</span>
+            </div>
+          </div>
+
+          <!-- Botón de Fijar Volumen (Acción principal) -->
+          <button id="btn-fix-volume" class="w-full py-2.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,122,26,0.4)] transition-all">
+            <span class="material-symbols-outlined text-[16px]">verified</span>
+            <span>FIJAR VOLUMEN [BARRA ESPACIADORA]</span>
+          </button>
+        </div>
+
+        <!-- D. DATOS GENERALES DEL PROYECTO (PRD REQ) -->
+        <div class="p-3 bg-[#16181d] rounded border border-[#3d2f26]/50 shadow-md flex flex-col gap-2">
+          <span class="font-mono text-xs text-on-surface font-semibold uppercase tracking-wider">// RESUMEN GENERAL</span>
+          
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div class="p-2 bg-[#0d0e12] rounded border border-[#3d2f26]/40 flex flex-col">
+              <span class="text-[10px] text-on-surface-variant">Volúmenes:</span>
+              <span id="metric-vol-count" class="text-base text-primary font-bold">1</span>
+            </div>
+            <div class="p-2 bg-[#0d0e12] rounded border border-[#3d2f26]/40 flex flex-col">
+              <span class="text-[10px] text-on-surface-variant">Huella en Planta:</span>
+              <span id="metric-footprint" class="text-base text-secondary font-bold">120 m²</span>
+            </div>
+            <div class="p-2 bg-[#0d0e12] rounded border border-[#3d2f26]/40 flex flex-col">
+              <span class="text-[10px] text-on-surface-variant">Sup. Construida:</span>
+              <span id="metric-built-area" class="text-base text-on-surface font-bold">360 m²</span>
+            </div>
+            <div class="p-2 bg-[#0d0e12] rounded border border-[#3d2f26]/40 flex flex-col">
+              <span class="text-[10px] text-on-surface-variant">Volumen Total:</span>
+              <span id="metric-total-vol" class="text-base text-tertiary font-bold">1,080 m³</span>
+            </div>
+          </div>
+
+          <!-- Escala de referencia (PRD REQ) -->
+          <div class="pt-1 flex items-center gap-1.5 text-[10px] font-mono text-outline">
+            <span class="material-symbols-outlined text-[12px]">info</span>
+            <span>Escala: Supone plantas de 3.0 m de altura libre.</span>
+          </div>
+        </div>
+
+        <!-- E. OPCIONES DE CONTROL (INFERIOR DERECHO PRD REQ) -->
+        <div class="flex items-center gap-2 pt-1">
+          <button id="btn-undo" class="flex-1 py-2 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface hover:text-primary transition-all border border-[#3d2f26]/60 text-xs font-mono flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">undo</span>
+            <span>Deshacer</span>
+          </button>
+          <button id="btn-delete-selected" class="flex-1 py-2 rounded bg-[#1e2027] hover:bg-red-950/60 text-red-400 hover:text-red-300 transition-all border border-[#3d2f26]/60 text-xs font-mono flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">delete</span>
+            <span>Eliminar</span>
+          </button>
+          <button id="btn-reset-all" class="flex-1 py-2 rounded bg-[#1e2027] hover:bg-red-900/40 text-on-surface-variant hover:text-red-300 transition-all border border-[#3d2f26]/60 text-xs font-mono flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">refresh</span>
+            <span>Limpiar</span>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ==================== SCRIPT PRINCIPAL THREE.JS & LÓGICA PRD ==================== -->
+  <script>
+    // --- ESTADO GLOBAL DE LA APLICACIÓN ---
+    const state = {
+      viewMode: '3d',
+      solarActive: true,
+      windActive: true,
+      hour: 12.0,
+      windDir: 'NE',
+      activeShape: 'box',
+      activeDims: { width: 12, depth: 10, height: 9 },
+      activePos: { x: 0, z: 0 },
+      placedVolumes: [],
+      selectedVolumeId: null,
+      history: [],
+      volCounter: 1
+    };
+
+    // --- CONFIGURACIÓN THREE.JS ---
+    const container = document.getElementById('viewport-container');
+    const canvas = document.getElementById('three-canvas');
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d0e12);
+    scene.fog = new THREE.FogExp2(0x0d0e12, 0.008);
+
+    const aspect = container.clientWidth / container.clientHeight;
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.5, 1000);
+    camera.position.set(38, 32, 45);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 - 0.02;
+    controls.target.set(0, 4, 0);
+
+    // --- LUCES Y ASOLEAMIENTO (HELIODÓN 3D) ---
+    const hemiLight = new THREE.HemisphereLight(0xffecd2, 0x111317, 0.45);
+    scene.add(hemiLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff1e0, 1.3);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 150;
+    const d = 40;
+    sunLight.shadow.camera.left = -d;
+    sunLight.shadow.camera.right = d;
+    sunLight.shadow.camera.top = d;
+    sunLight.shadow.camera.bottom = -d;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    // Sol 3D visual (Esfera brillante)
+    const sunGeo = new THREE.SphereGeometry(1.8, 16, 16);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa33 });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    scene.add(sunMesh);
+
+    // Arco Solar visual
+    const arcCurve = new THREE.EllipseCurve(0, 0, 50, 45, 0, Math.PI, false, 0);
+    const arcPoints = arcCurve.getPoints(50);
+    const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPoints.map(p => new THREE.Vector3(p.x, p.y, 0)));
+    const arcMat = new THREE.LineDashedMaterial({ color: 0xff7a1a, dashSize: 1.5, gapSize: 1, opacity: 0.35, transparent: true });
+    const solarArc = new THREE.Line(arcGeo, arcMat);
+    solarArc.computeLineDistances();
+    solarArc.rotation.y = Math.PI / 4;
+    scene.add(solarArc);
+
+    // --- SUELO ARQUITECTÓNICO & RETÍCULA ---
+    const planeGeo = new THREE.PlaneGeometry(120, 120);
+    const planeMat = new THREE.MeshStandardMaterial({ color: 0x111317, roughness: 0.9, metalness: 0.1 });
+    const ground = new THREE.Mesh(planeGeo, planeMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const grid = new THREE.GridHelper(80, 80, 0xff7a1a, 0x292a2d);
+    grid.position.y = 0.02;
+    scene.add(grid);
+
+    // Rosa de los Vientos / Brújula en el piso
+    const compassGroup = new THREE.Group();
+    const northLineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(0, 0.05, -35)]);
+    const northLine = new THREE.Line(northLineGeo, new THREE.LineBasicMaterial({ color: 0xff7a1a, linewidth: 2 }));
+    compassGroup.add(northLine);
+    scene.add(compassGroup);
+
+    // --- SISTEMA DE PARTÍCULAS DE VIENTO ---
+    const windCount = 200;
+    const windGeo = new THREE.BufferGeometry();
+    const windPos = new Float32Array(windCount * 3);
+    for (let i = 0; i < windCount * 3; i += 3) {
+      windPos[i] = (Math.random() - 0.5) * 60;
+      windPos[i + 1] = Math.random() * 15 + 1;
+      windPos[i + 2] = (Math.random() - 0.5) * 60;
+    }
+    windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
+    const windMat = new THREE.PointsMaterial({ color: 0x26dcdd, size: 0.45, transparent: true, opacity: 0.7 });
+    const windParticles = new THREE.Points(windGeo, windMat);
+    scene.add(windParticles);
+
+    // --- VOLUMEN ACTIVO (EN CURSO) ---
+    let activeMesh = null;
+    let activeEdges = null;
+
+    function createGeometry(shape, w, d, h) {
+      switch (shape) {
+        case 'cylinder':
+          return new THREE.CylinderGeometry(Math.min(w, d) / 2, Math.min(w, d) / 2, h, 24);
+        case 'wedge': {
+          const geom = new THREE.BoxGeometry(w, h, d);
+          const pos = geom.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            if (pos.getY(i) > 0 && pos.getZ(i) > 0) {
+              pos.setY(i, -h / 2);
+            }
+          }
+          geom.computeVertexNormals();
+          return geom;
+        }
+        case 'lshape': {
+          return new THREE.BoxGeometry(w, h, d);
+        }
+        case 'box':
+        default:
+          return new THREE.BoxGeometry(w, h, d);
+      }
+    }
+
+    function updateActiveVolumeMesh() {
+      if (activeMesh) {
+        scene.remove(activeMesh);
+        if (activeEdges) scene.remove(activeEdges);
+      }
+
+      const geom = createGeometry(state.activeShape, state.activeDims.width, state.activeDims.depth, state.activeDims.height);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0xffb68e,
+        roughness: 0.35,
+        metalness: 0.05,
+        transparent: true,
+        opacity: 0.95
+      });
+
+      activeMesh = new THREE.Mesh(geom, mat);
+      activeMesh.castShadow = true;
+      activeMesh.receiveShadow = true;
+      activeMesh.position.set(state.activePos.x, state.activeDims.height / 2, state.activePos.z);
+      scene.add(activeMesh);
+
+      const edgesGeom = new THREE.EdgesGeometry(geom);
+      activeEdges = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0xff7a1a, linewidth: 2 }));
+      activeMesh.add(activeEdges);
+
+      updateMetrics();
+    }
+
+    // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (PRD REQ) ---
+    function fixCurrentVolume() {
+      const geom = createGeometry(state.activeShape, state.activeDims.width, state.activeDims.depth, state.activeDims.height);
+      const palette = [0xffd799, 0xffb68e, 0xe3e2e6, 0xefc4b0];
+      const volColor = palette[state.placedVolumes.length % palette.length];
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: volColor,
+        roughness: 0.45,
+        metalness: 0.05
+      });
+
+      const mesh = new THREE.Mesh(geom, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.position.set(state.activePos.x, state.activeDims.height / 2, state.activePos.z);
+      
+      const edgesGeom = new THREE.EdgesGeometry(geom);
+      const edges = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x584236, linewidth: 1.5 }));
+      mesh.add(edges);
+
+      scene.add(mesh);
+
+      const volRecord = {
+        id: `VOL-${String(state.volCounter).padStart(2, '0')}`,
+        shape: state.activeShape,
+        width: state.activeDims.width,
+        depth: state.activeDims.depth,
+        height: state.activeDims.height,
+        x: state.activePos.x,
+        z: state.activePos.z,
+        mesh: mesh
+      };
+
+      mesh.userData = { id: volRecord.id };
+      state.placedVolumes.push(volRecord);
+      state.history.push({ action: 'add', volume: volRecord });
+      state.volCounter++;
+
+      showToast(`✓ Volumen #${volRecord.id} fijado. Simulación bioclimática integrada.`);
+
+      // Desplazar ligeramente la siguiente pieza para seguir modelando fluido
+      state.activePos.x += (state.activeDims.width / 2 + 3);
+      if (state.activePos.x > 25) {
+        state.activePos.x = -15;
+        state.activePos.z += (state.activeDims.depth / 2 + 4);
+      }
+      document.getElementById('input-pos-x').value = state.activePos.x;
+      document.getElementById('input-pos-z').value = state.activePos.z;
+      document.getElementById('active-vol-id').textContent = `#VOL-${String(state.volCounter).padStart(2, '0')}`;
+
+      updateActiveVolumeMesh();
+    }
+
+    // --- DESHACER (UNDO) ---
+    function undoLast() {
+      if (state.history.length === 0) {
+        showToast('No hay acciones recientes para deshacer');
+        return;
+      }
+      const last = state.history.pop();
+      if (last.action === 'add') {
+        scene.remove(last.volume.mesh);
+        state.placedVolumes = state.placedVolumes.filter(v => v.id !== last.volume.id);
+        showToast(`Deshecho: Se eliminó ${last.volume.id}`);
+        updateMetrics();
+      }
+    }
+
+    // --- LIMPIAR TODO (RESET) ---
+    function resetAll() {
+      if (confirm('¿Restablecer el lienzo y eliminar todos los volúmenes?')) {
+        state.placedVolumes.forEach(v => scene.remove(v.mesh));
+        state.placedVolumes = [];
+        state.history = [];
+        state.volCounter = 1;
+        state.activePos = { x: 0, z: 0 };
+        document.getElementById('input-pos-x').value = 0;
+        document.getElementById('input-pos-z').value = 0;
+        document.getElementById('active-vol-id').textContent = '#VOL-01';
+        updateActiveVolumeMesh();
+        showToast('Lienzo restablecido con éxito');
+      }
+    }
+
+    // --- ACTUALIZAR MÉTRICAS GENERALES EN TIEMPO REAL ---
+    function updateMetrics() {
+      const allVolumes = [...state.placedVolumes];
+      if (activeMesh) {
+        allVolumes.push({
+          width: state.activeDims.width,
+          depth: state.activeDims.depth,
+          height: state.activeDims.height
+        });
+      }
+
+      let totalFootprint = 0;
+      let totalBuiltArea = 0;
+      let totalVolume = 0;
+
+      allVolumes.forEach(v => {
+        const fp = v.width * v.depth;
+        const floors = Math.max(1, Math.round(v.height / 3.0));
+        totalFootprint += fp;
+        totalBuiltArea += fp * floors;
+        totalVolume += fp * v.height;
+      });
+
+      document.getElementById('metric-vol-count').textContent = allVolumes.length;
+      document.getElementById('metric-footprint').textContent = `${Math.round(totalFootprint)} m²`;
+      document.getElementById('metric-built-area').textContent = `${Math.round(totalBuiltArea)} m²`;
+      document.getElementById('metric-total-vol').textContent = `${Math.round(totalVolume).toLocaleString()} m³`;
+
+      // Calcular esfuerzo mental dinámico (Señal Cerebral PRD)
+      const effort = Math.min(95, Math.max(35, 40 + allVolumes.length * 7));
+      document.getElementById('brain-effort-val').textContent = `${effort}%`;
+      const desc = document.getElementById('brain-effort-desc');
+      if (effort < 55) {
+        desc.textContent = 'Estado: Exploración Inicial • Carga Cognitiva Baja';
+      } else if (effort < 75) {
+        desc.textContent = 'Estado: Enfoque Creativo Fluido • Ideación Espacial Óptima';
+      } else {
+        desc.textContent = 'Estado: Alta Densidad • Monitoreo de Asoleamiento y Confort Térmico';
+      }
+    }
+
+    // --- CÁLCULO DE ASOLEAMIENTO SOLAR ---
+    function updateSunPosition() {
+      const h = state.hour;
+      const progress = (h - 6) / 12;
+      const sunAngle = progress * Math.PI;
+
+      const radius = 55;
+      const x = Math.cos(sunAngle) * radius;
+      const y = Math.max(1, Math.sin(sunAngle) * radius);
+      const z = Math.cos(sunAngle) * 20;
+
+      sunLight.position.set(x, y, z);
+      sunMesh.position.set(x, y, z);
+
+      const altitude = Math.round(Math.sin(sunAngle) * 75);
+      const azimuth = Math.round(90 + progress * 180);
+      document.getElementById('label-solar-angles').textContent = `AZIMUT ${azimuth}° • ALT ${altitude}°`;
+
+      const horas = Math.floor(h);
+      const minutos = Math.round((h - horas) * 60);
+      const minStr = minutos < 10 ? '0' + minutos : minutos;
+      const ampm = horas >= 12 ? 'PM' : 'AM';
+      const fHour = horas > 12 ? horas - 12 : (horas === 0 ? 12 : horas);
+      const str = `${fHour}:${minStr} ${ampm}`;
+
+      document.getElementById('label-hora-live').textContent = str;
+      document.getElementById('label-hora-slider').textContent = str;
+    }
+
+    // --- DIRECCIÓN DEL VIENTO (VECTOR DE VELOCIDAD) ---
+    const windVectors = {
+      N: { x: 0, z: -1 },
+      NE: { x: -0.7, z: -0.7 },
+      E: { x: -1, z: 0 },
+      SE: { x: -0.7, z: 0.7 },
+      S: { x: 0, z: 1 },
+      SO: { x: 0.7, z: 0.7 },
+      O: { x: 1, z: 0 },
+      NO: { x: 0.7, z: -0.7 }
+    };
+
+    // --- SELECCIÓN POR CLICK EN MODELO 3D (RAYCASTING) ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    window.addEventListener('click', (e) => {
+      if (e.clientX > window.innerWidth - 384 || e.clientY < 56) return;
+
+      mouse.x = (e.clientX / container.clientWidth) * 2 - 1;
+      mouse.y = -(e.clientY / container.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const placedMeshes = state.placedVolumes.map(v => v.mesh);
+      const intersects = raycaster.intersectObjects(placedMeshes);
+
+      if (intersects.length > 0) {
+        const hitMesh = intersects[0].object;
+        const volId = hitMesh.userData.id;
+        state.selectedVolumeId = volId;
+        const vol = state.placedVolumes.find(v => v.id === volId);
+        if (vol) {
+          showToast(`Volumen #${vol.id} seleccionado (${vol.width}x${vol.depth}x${vol.height}m)`);
+        }
+      } else {
+        state.selectedVolumeId = null;
+      }
+    });
+
+    // --- ANIMACIÓN PRINCIPAL ---
+    let clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      controls.update();
+
+      if (state.windActive) {
+        const vec = windVectors[state.windDir] || { x: 0, z: -1 };
+        const positions = windGeo.attributes.position.array;
+        for (let i = 0; i < windCount * 3; i += 3) {
+          positions[i] += vec.x * 25 * delta;
+          positions[i + 2] += vec.z * 25 * delta;
+
+          if (Math.abs(positions[i]) > 35) positions[i] = -positions[i];
+          if (Math.abs(positions[i + 2]) > 35) positions[i + 2] = -positions[i + 2];
+        }
+        windGeo.attributes.position.needsUpdate = true;
+      }
+
+      const brainPath = document.getElementById('brainwave-path');
+      if (brainPath) {
+        const time = Date.now() * 0.003;
+        let d = 'M0,20 ';
+        for (let x = 0; x <= 300; x += 30) {
+          const y = 20 + Math.sin(time + x * 0.05) * 8;
+          d += `Q${x + 15},${y} ${x + 30},20 `;
+        }
+        brainPath.setAttribute('d', d);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // --- EVENTOS DE INTERFAZ & ATAJOS ---
+    function setupEventListeners() {
+      const sAncho = document.getElementById('slider-ancho');
+      const sFondo = document.getElementById('slider-fondo');
+      const sAlto = document.getElementById('slider-alto');
+
+      sAncho.addEventListener('input', (e) => {
+        state.activeDims.width = parseFloat(e.target.value);
+        document.getElementById('val-ancho').textContent = `${state.activeDims.width} m`;
+        updateActiveVolumeMesh();
+      });
+
+      sFondo.addEventListener('input', (e) => {
+        state.activeDims.depth = parseFloat(e.target.value);
+        document.getElementById('val-fondo').textContent = `${state.activeDims.depth} m`;
+        updateActiveVolumeMesh();
+      });
+
+      sAlto.addEventListener('input', (e) => {
+        state.activeDims.height = parseFloat(e.target.value);
+        const floors = Math.round(state.activeDims.height / 3.0);
+        document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${floors} plantas)`;
+        updateActiveVolumeMesh();
+      });
+
+      document.getElementById('input-pos-x').addEventListener('input', (e) => {
+        state.activePos.x = parseFloat(e.target.value) || 0;
+        updateActiveVolumeMesh();
+      });
+      document.getElementById('input-pos-z').addEventListener('input', (e) => {
+        state.activePos.z = parseFloat(e.target.value) || 0;
+        updateActiveVolumeMesh();
+      });
+
+      const shapeButtons = document.querySelectorAll('#shape-selector button');
+      shapeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          shapeButtons.forEach(b => {
+            b.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30';
+          });
+          btn.className = 'flex flex-col items-center justify-center p-2 rounded bg-[#1e2027] text-primary-container border border-primary-container/50 hover:bg-[#252830] transition-colors group';
+          state.activeShape = btn.dataset.shape;
+          updateActiveVolumeMesh();
+        });
+      });
+
+      const sHora = document.getElementById('slider-hora');
+      sHora.addEventListener('input', (e) => {
+        state.hour = parseFloat(e.target.value);
+        updateSunPosition();
+      });
+
+      const windButtons = document.querySelectorAll('#wind-dir-selector button');
+      windButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          windButtons.forEach(b => {
+            b.className = 'py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30';
+          });
+          btn.className = 'py-1 rounded bg-tertiary text-surface font-bold text-[10px] font-mono shadow';
+          state.windDir = btn.dataset.dir;
+        });
+      });
+
+      const btnSolar = document.getElementById('toggle-solar');
+      btnSolar.addEventListener('click', () => {
+        state.solarActive = !state.solarActive;
+        sunMesh.visible = state.solarActive;
+        solarArc.visible = state.solarActive;
+        sunLight.intensity = state.solarActive ? 1.3 : 0.2;
+        btnSolar.textContent = `Bóveda Solar [${state.solarActive ? 'ON' : 'OFF'}]`;
+        btnSolar.className = state.solarActive
+          ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/20 text-primary hover:bg-primary-container/30 transition-colors font-mono text-xs font-semibold border border-primary-container/30'
+          : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline font-mono text-xs border border-[#3d2f26]/30';
+      });
+
+      const btnWind = document.getElementById('toggle-wind');
+      btnWind.addEventListener('click', () => {
+        state.windActive = !state.windActive;
+        windParticles.visible = state.windActive;
+        btnWind.textContent = `Brisa Viento [${state.windActive ? 'ON' : 'OFF'}]`;
+        btnWind.className = state.windActive
+          ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-mono text-xs font-semibold border border-tertiary/30'
+          : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline font-mono text-xs border border-[#3d2f26]/30';
+      });
+
+      document.getElementById('btn-fix-volume').addEventListener('click', fixCurrentVolume);
+
+      document.getElementById('btn-undo').addEventListener('click', undoLast);
+      document.getElementById('btn-reset-all').addEventListener('click', resetAll);
+      document.getElementById('btn-delete-selected').addEventListener('click', () => {
+        if (!state.selectedVolumeId) {
+          showToast('Selecciona primero un volumen en el visor 3D para eliminarlo');
+          return;
+        }
+        const vol = state.placedVolumes.find(v => v.id === state.selectedVolumeId);
+        if (vol) {
+          scene.remove(vol.mesh);
+          state.placedVolumes = state.placedVolumes.filter(v => v.id !== state.selectedVolumeId);
+          showToast(`Volumen #${state.selectedVolumeId} eliminado`);
+          state.selectedVolumeId = null;
+          updateMetrics();
+        }
+      });
+
+      const btnBreathe = document.getElementById('btn-breathing');
+      btnBreathe.addEventListener('click', () => {
+        btnBreathe.textContent = 'Inhala... Exhala (4s)';
+        btnBreathe.classList.add('bg-tertiary/20', 'text-tertiary');
+        setTimeout(() => {
+          btnBreathe.innerHTML = '<span class="material-symbols-outlined text-[12px] text-primary">air</span><span>Pausa Mental</span>';
+          btnBreathe.classList.remove('bg-tertiary/20', 'text-tertiary');
+        }, 4000);
+      });
+
+      const btn3D = document.getElementById('view-mode-3d');
+      const btn2D = document.getElementById('view-mode-2d');
+
+      btn3D.addEventListener('click', () => {
+        state.viewMode = '3d';
+        btn3D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface font-mono text-xs font-bold transition-all shadow-md';
+        btn2D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-mono text-xs';
+        camera.position.set(38, 32, 45);
+        controls.target.set(0, 4, 0);
+      });
+
+      btn2D.addEventListener('click', () => {
+        state.viewMode = '2d';
+        btn2D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container text-surface font-mono text-xs font-bold transition-all shadow-md';
+        btn3D.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-all font-mono text-xs';
+        camera.position.set(0, 70, 0.001);
+        controls.target.set(0, 0, 0);
+      });
+
+      document.getElementById('btn-screenshot').addEventListener('click', () => {
+        renderer.render(scene, camera);
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `TrazoMental_Modelo_${Date.now()}.png`;
+        link.href = dataURL;
+        link.click();
+        showToast('Captura descargada con éxito');
+      });
+
+      document.getElementById('btn-export-report').addEventListener('click', () => {
+        const totalVols = state.placedVolumes.length + 1;
+        const totalFP = document.getElementById('metric-footprint').textContent;
+        const totalConst = document.getElementById('metric-built-area').textContent;
+        const totalVol = document.getElementById('metric-total-vol').textContent;
+        const report = `========================================================\n` +
+                       `REPORTE BIOCLIMÁTICO - TRAZO MENTAL (GRUPO 29)\n` +
+                       `Fecha: ${new Date().toLocaleString()}\n` +
+                       `========================================================\n\n` +
+                       `1. MÉTRICAS GENERALES DE IMPLANTACIÓN:\n` +
+                       `   - Total Volúmenes Modelados: ${totalVols}\n` +
+                       `   - Huella en Planta: ${totalFP}\n` +
+                       `   - Superficie Construida Estimada: ${totalConst}\n` +
+                       `   - Volumen Total Edificado: ${totalVol}\n\n` +
+                       `2. CONDICIONANTES BIOCLIMÁTICAS:\n` +
+                       `   - Simulación Solar Activa: ${state.solarActive ? 'SÍ' : 'NO'}\n` +
+                       `   - Hora Analizada: ${document.getElementById('label-hora-live').textContent}\n` +
+                       `   - Ángulos Solares: ${document.getElementById('label-solar-angles').textContent}\n` +
+                       `   - Dirección Predominante del Viento: ${state.windDir}\n` +
+                       `   - Índice de Esfuerzo Cognitivo: ${document.getElementById('brain-effort-val').textContent}\n\n` +
+                       `Generado automáticamente desde Trazo Mental.\n` +
+                       `========================================================`;
+        
+        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.download = `Reporte_Bioclimatico_TrazoMental_${Date.now()}.txt`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        showToast('Reporte generado y descargado');
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          fixCurrentVolume();
+        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+          state.activePos.x += 1;
+          document.getElementById('input-pos-x').value = state.activePos.x;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+          state.activePos.x -= 1;
+          document.getElementById('input-pos-x').value = state.activePos.x;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+          state.activePos.z -= 1;
+          document.getElementById('input-pos-z').value = state.activePos.z;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+          state.activePos.z += 1;
+          document.getElementById('input-pos-z').value = state.activePos.z;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'r' || e.key === 'R') {
+          state.activeDims.height = Math.min(36, state.activeDims.height + 3);
+          document.getElementById('slider-alto').value = state.activeDims.height;
+          document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'f' || e.key === 'F') {
+          state.activeDims.height = Math.max(3, state.activeDims.height - 3);
+          document.getElementById('slider-alto').value = state.activeDims.height;
+          document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+          updateActiveVolumeMesh();
+        } else if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (state.selectedVolumeId) {
+            document.getElementById('btn-delete-selected').click();
+          }
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'px-4 py-2 rounded bg-primary-container text-surface font-mono text-xs font-bold shadow-2xl flex items-center gap-2 border border-primary animate-bounce';
+      toast.innerHTML = `<span class="material-symbols-outlined text-[16px]">verified</span><span>${msg}</span>`;
+      const container = document.getElementById('toast-container');
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => toast.remove(), 500);
+      }, 2500);
+    }
+
+    // --- INICIALIZACIÓN ---
+    window.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+      updateSunPosition();
+      updateActiveVolumeMesh();
+      animate();
+    });
+  </script>
+</body>
+</html>
