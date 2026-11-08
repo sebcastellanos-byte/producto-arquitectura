@@ -106,7 +106,7 @@
 
       <div class="h-4 w-[1px] bg-[#3d2f26]/60"></div>
 
-      <button id="btn-screenshot" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-semibold transition-all shadow-[0_0_15px_rgba(255,122,26,0.4)] text-xs font-mono" title="Tomar captura del modelo">
+      <button id="btn-screenshot" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-semibold transition-all shadow-[0_0_15px_rgba(255,122,26,0.4)] text-xs font-mono" title="Descargar imagen limpia solo con los volúmenes">
         <span class="material-symbols-outlined text-[15px]">photo_camera</span>
         <span>Captura Asoleamiento</span>
       </button>
@@ -159,7 +159,7 @@
           <span class="text-[#3d2f26] text-[11px]">|</span>
           <button id="toggle-wind" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-mono text-xs font-semibold border border-tertiary/30">
             <span class="material-symbols-outlined text-[15px] text-tertiary">air</span>
-            <span>Brisa Viento [ON]</span>
+            <span>Líneas de Flujo [ON]</span>
           </button>
           <span class="text-[#3d2f26] text-[11px]">|</span>
           <div class="flex items-center gap-1 text-on-surface-variant font-mono text-xs">
@@ -248,7 +248,7 @@
           <div class="flex flex-col gap-1.5">
             <label class="font-mono text-[10px] text-outline uppercase tracking-wider flex items-center gap-1">
               <span class="material-symbols-outlined text-[13px] text-tertiary">air</span>
-              Dirección del Viento
+              Dirección del Viento (Corrientes CFD)
             </label>
             <div id="wind-dir-selector" class="grid grid-cols-4 gap-1">
               <button data-dir="N" class="py-1 rounded bg-[#1e2027] text-on-surface-variant hover:text-primary text-[10px] font-mono border border-[#3d2f26]/30">N</button>
@@ -521,19 +521,60 @@
     compassGroup.add(northLine);
     scene.add(compassGroup);
 
-    // --- SISTEMA DE PARTÍCULAS DE VIENTO ---
-    const windCount = 200;
-    const windGeo = new THREE.BufferGeometry();
-    const windPos = new Float32Array(windCount * 3);
-    for (let i = 0; i < windCount * 3; i += 3) {
-      windPos[i] = (Math.random() - 0.5) * 60;
-      windPos[i + 1] = Math.random() * 15 + 1;
-      windPos[i + 2] = (Math.random() - 0.5) * 60;
+    // --- SISTEMA AERODINÁMICO DE BRISA (LÍNEAS DE FLUJO CONTINUO / CFD STREAMLINES) ---
+    const windGroup = new THREE.Group();
+    const streamlineCount = 65;
+    const trailLength = 12;
+    const streamlines = [];
+    const windColors = [0x26dcdd, 0x56f9f9, 0x00ffff, 0x80ffff];
+
+    for (let i = 0; i < streamlineCount; i++) {
+      const positions = new Float32Array(trailLength * 3);
+      const colors = new Float32Array(trailLength * 3);
+      const baseColor = new THREE.Color(windColors[i % windColors.length]);
+
+      for (let j = 0; j < trailLength; j++) {
+        // La cabeza es brillante y la cola se desvanece
+        const alpha = Math.pow(1.0 - (j / trailLength), 1.5);
+        colors[j * 3] = baseColor.r * alpha;
+        colors[j * 3 + 1] = baseColor.g * alpha;
+        colors[j * 3 + 2] = baseColor.b * alpha;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.85,
+        linewidth: 2
+      });
+
+      const line = new THREE.Line(geo, mat);
+      windGroup.add(line);
+
+      const startX = (Math.random() - 0.5) * 80;
+      const startZ = (Math.random() - 0.5) * 80;
+      const startY = Math.random() * 15 + 1.2;
+
+      const history = [];
+      for (let j = 0; j < trailLength; j++) {
+        history.push(new THREE.Vector3(startX, startY, startZ));
+      }
+
+      streamlines.push({
+        line: line,
+        geo: geo,
+        history: history,
+        pos: new THREE.Vector3(startX, startY, startZ),
+        speed: 16 + Math.random() * 12,
+        baseY: startY,
+        wobbleOffset: Math.random() * Math.PI * 2
+      });
     }
-    windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
-    const windMat = new THREE.PointsMaterial({ color: 0x26dcdd, size: 0.45, transparent: true, opacity: 0.7 });
-    const windParticles = new THREE.Points(windGeo, windMat);
-    scene.add(windParticles);
+    scene.add(windGroup);
 
     // --- RECUADRO VISUAL DE SELECCIÓN EN 3D ---
     const dummyGeo = new THREE.BoxGeometry(1, 1, 1);
@@ -732,7 +773,6 @@
 
       const geom = createGeometry(shape, w, d, h);
 
-      // Material completamente sólido sin transparencia
       const mat = new THREE.MeshStandardMaterial({
         color: color,
         roughness: 0.45,
@@ -772,7 +812,6 @@
 
       deselectVolume();
 
-      // Desplazar posición del siguiente volumen para no encimar
       state.activePos.x += (state.activeDims.width / 2 + 3);
       if (state.activePos.x > 25) {
         state.activePos.x = -15;
@@ -951,17 +990,70 @@
       const delta = clock.getDelta();
       controls.update();
 
+      // Animación de Líneas de Flujo de Brisa (Corrientes Aerodinámicas CFD)
       if (state.windActive) {
         const vec = windVectors[state.windDir] || { x: 0, z: -1 };
-        const positions = windGeo.attributes.position.array;
-        for (let i = 0; i < windCount * 3; i += 3) {
-          positions[i] += vec.x * 25 * delta;
-          positions[i + 2] += vec.z * 25 * delta;
+        const time = Date.now() * 0.002;
 
-          if (Math.abs(positions[i]) > 35) positions[i] = -positions[i];
-          if (Math.abs(positions[i + 2]) > 35) positions[i + 2] = -positions[i + 2];
+        const allVols = [...state.placedVolumes];
+        if (activeMesh && !state.selectedVolume) {
+          allVols.push({
+            x: state.activePos.x,
+            z: state.activePos.z,
+            width: state.activeDims.width,
+            depth: state.activeDims.depth,
+            height: state.activeDims.height
+          });
         }
-        windGeo.attributes.position.needsUpdate = true;
+
+        streamlines.forEach(st => {
+          st.pos.x += vec.x * st.speed * delta;
+          st.pos.z += vec.z * st.speed * delta;
+
+          let targetY = st.baseY + Math.sin(time * 3 + st.wobbleOffset) * 0.4;
+
+          // Desviar el aire hacia arriba al chocar con cualquier volumen edificado
+          for (let v of allVols) {
+            const halfW = (v.width / 2) + 2.5;
+            const halfD = (v.depth / 2) + 2.5;
+            const topY = v.height + 2.0;
+
+            const dx = Math.abs(st.pos.x - v.x);
+            const dz = Math.abs(st.pos.z - v.z);
+
+            if (dx < halfW && dz < halfD) {
+              if (st.pos.y < topY) {
+                targetY = Math.max(targetY, topY + Math.sin(time * 4) * 0.4);
+              }
+            }
+          }
+
+          st.pos.y = THREE.MathUtils.lerp(st.pos.y, targetY, 0.18);
+
+          // Actualizar estela continua
+          st.history.unshift(st.pos.clone());
+          st.history.pop();
+
+          const posAttr = st.geo.attributes.position.array;
+          for (let j = 0; j < trailLength; j++) {
+            const p = st.history[j];
+            posAttr[j * 3] = p.x;
+            posAttr[j * 3 + 1] = p.y;
+            posAttr[j * 3 + 2] = p.z;
+          }
+          st.geo.attributes.position.needsUpdate = true;
+
+          // Reciclar corriente cuando sale del espacio de trabajo
+          if (Math.abs(st.pos.x) > 45 || Math.abs(st.pos.z) > 45) {
+            st.pos.x = -vec.x * 42 + (Math.random() - 0.5) * 60 * (Math.abs(vec.z) > 0.3 ? 1 : 0);
+            st.pos.z = -vec.z * 42 + (Math.random() - 0.5) * 60 * (Math.abs(vec.x) > 0.3 ? 1 : 0);
+            st.baseY = Math.random() * 14 + 1.2;
+            st.pos.y = st.baseY;
+            for (let j = 0; j < trailLength; j++) {
+              st.history[j].copy(st.pos);
+            }
+          }
+        });
       }
 
       if (state.selectedVolume && selectionBox.visible) {
@@ -1096,8 +1188,8 @@
       const btnWind = document.getElementById('toggle-wind');
       btnWind.addEventListener('click', () => {
         state.windActive = !state.windActive;
-        windParticles.visible = state.windActive;
-        btnWind.textContent = `Brisa Viento [${state.windActive ? 'ON' : 'OFF'}]`;
+        windGroup.visible = state.windActive;
+        btnWind.textContent = `Líneas de Flujo [${state.windActive ? 'ON' : 'OFF'}]`;
         btnWind.className = state.windActive
           ? 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary/15 text-tertiary hover:bg-tertiary/25 transition-colors font-mono text-xs font-semibold border border-tertiary/30'
           : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline font-mono text-xs border border-[#3d2f26]/30';
@@ -1140,14 +1232,50 @@
         controls.target.set(0, 0, 0);
       });
 
+      // Captura de imagen limpia (SOLO LOS VOLÚMENES)
       document.getElementById('btn-screenshot').addEventListener('click', () => {
+        const prevGrid = grid.visible;
+        const prevCompass = compassGroup.visible;
+        const prevSolarArc = solarArc.visible;
+        const prevSun = sunMesh.visible;
+        const prevSelBox = selectionBox.visible;
+        const prevWind = windGroup.visible;
+        const prevGround = ground.visible;
+        const prevActive = activeMesh ? activeMesh.visible : false;
+
+        // Ocultar suelo, retícula, sol, brisa, brújula y recuadros de selección
+        grid.visible = false;
+        compassGroup.visible = false;
+        solarArc.visible = false;
+        sunMesh.visible = false;
+        selectionBox.visible = false;
+        windGroup.visible = false;
+        ground.visible = false;
+
+        // Si ya hay volúmenes fijados, ocultar el borrador para dejar solo los terminados
+        if (state.placedVolumes.length > 0 && activeMesh) {
+          activeMesh.visible = false;
+        }
+
         renderer.render(scene, camera);
         const dataURL = canvas.toDataURL('image/png');
+
+        // Restaurar estado visual del espacio de trabajo
+        grid.visible = prevGrid;
+        compassGroup.visible = prevCompass;
+        solarArc.visible = prevSolarArc;
+        sunMesh.visible = prevSun;
+        selectionBox.visible = prevSelBox;
+        windGroup.visible = prevWind;
+        ground.visible = prevGround;
+        if (activeMesh) activeMesh.visible = prevActive;
+        renderer.render(scene, camera);
+
         const link = document.createElement('a');
-        link.download = `TrazoMental_Modelo_${Date.now()}.png`;
+        link.download = `TrazoMental_Volumenes_${Date.now()}.png`;
         link.href = dataURL;
         link.click();
-        showToast('Captura descargada con éxito');
+        showToast('Captura descargada: Solo volúmenes arquitectónicos');
       });
 
       window.addEventListener('keydown', (e) => {
