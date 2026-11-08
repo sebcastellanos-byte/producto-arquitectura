@@ -1232,50 +1232,54 @@
         controls.target.set(0, 0, 0);
       });
 
-      // Captura de imagen limpia (SOLO LOS VOLÚMENES)
+      // Captura de imagen en alta resolución con TODOS los volúmenes
       document.getElementById('btn-screenshot').addEventListener('click', () => {
+        // Guardar estados previos
         const prevGrid = grid.visible;
         const prevCompass = compassGroup.visible;
         const prevSolarArc = solarArc.visible;
         const prevSun = sunMesh.visible;
         const prevSelBox = selectionBox.visible;
         const prevWind = windGroup.visible;
-        const prevGround = ground.visible;
-        const prevActive = activeMesh ? activeMesh.visible : false;
+        const prevPixelRatio = renderer.getPixelRatio();
 
-        // Ocultar suelo, retícula, sol, brisa, brújula y recuadros de selección
+        // Ocultar solo elementos auxiliares de interfaz (retícula, brújula, sol 3D, líneas de viento)
         grid.visible = false;
         compassGroup.visible = false;
         solarArc.visible = false;
         sunMesh.visible = false;
         selectionBox.visible = false;
         windGroup.visible = false;
-        ground.visible = false;
 
-        // Si ya hay volúmenes fijados, ocultar el borrador para dejar solo los terminados
-        if (state.placedVolumes.length > 0 && activeMesh) {
-          activeMesh.visible = false;
+        // ASEGURAR QUE ABSOLUTAMENTE TODOS LOS VOLÚMENES ESTÉN VISIBLES
+        state.placedVolumes.forEach(v => {
+          v.mesh.visible = true;
+        });
+        if (activeMesh) {
+          activeMesh.visible = true;
         }
 
+        // RENDERIZAR EN ULTRA ALTA DEFINICIÓN (3X NITIDEZ Y MÁXIMA CALIDAD)
+        renderer.setPixelRatio(3.0);
         renderer.render(scene, camera);
-        const dataURL = canvas.toDataURL('image/png');
 
-        // Restaurar estado visual del espacio de trabajo
+        const dataURL = canvas.toDataURL('image/png', 1.0);
+
+        // Restaurar estado visual y resolución normal
+        renderer.setPixelRatio(prevPixelRatio);
         grid.visible = prevGrid;
         compassGroup.visible = prevCompass;
         solarArc.visible = prevSolarArc;
         sunMesh.visible = prevSun;
         selectionBox.visible = prevSelBox;
         windGroup.visible = prevWind;
-        ground.visible = prevGround;
-        if (activeMesh) activeMesh.visible = prevActive;
         renderer.render(scene, camera);
 
         const link = document.createElement('a');
-        link.download = `TrazoMental_Volumenes_${Date.now()}.png`;
+        link.download = `TrazoMental_Asoleamiento_HD_${Date.now()}.png`;
         link.href = dataURL;
         link.click();
-        showToast('Captura descargada: Solo volúmenes arquitectónicos');
+        showToast('Captura Ultra HD descargada con todos los volúmenes');
       });
 
       window.addEventListener('keydown', (e) => {
