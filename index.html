@@ -209,8 +209,16 @@
             <span>Mover eje X/Z</span>
           </div>
           <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-secondary border border-[#3d2f26]">[Q] / [E]</kbd>
+            <span>Elevar/Bajar nivel Y</span>
+          </div>
+          <div class="flex items-center gap-1.5">
             <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-on-surface border border-[#3d2f26]">[R] / [F]</kbd>
             <span>Subir/Bajar alto</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-tertiary border border-[#3d2f26]">[Corte CSG]</kbd>
+            <span>Sustraer hueco</span>
           </div>
           <div class="flex items-center gap-1.5">
             <kbd class="px-1.5 py-0.5 rounded bg-[#1e2027] text-red-400 border border-[#3d2f26]">[Supr/Del]</kbd>
@@ -328,7 +336,7 @@
             </div>
           </div>
 
-          <!-- Sliders de Dimensiones (Ancho, Fondo, Alto en metros) -->
+          <!-- Sliders de Dimensiones (Ancho, Fondo, Alto, Elevación) -->
           <div class="flex flex-col gap-2.5">
             <!-- Ancho (X) -->
             <div class="flex flex-col gap-1">
@@ -356,6 +364,15 @@
               </div>
               <input id="slider-alto" type="range" min="3" max="36" step="3" value="9" class="w-full custom-range cursor-pointer"/>
             </div>
+
+            <!-- Elevación (Nivel Y) -->
+            <div class="flex flex-col gap-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-on-surface-variant">Elevación (Nivel Y):</span>
+                <span id="val-elevacion" class="text-secondary font-bold">0.0 m (Suelo)</span>
+              </div>
+              <input id="slider-elevacion" type="range" min="-6" max="30" step="0.5" value="0" class="w-full custom-range cursor-pointer"/>
+            </div>
           </div>
 
           <!-- Posición en la Retícula (X, Z) -->
@@ -376,6 +393,12 @@
           <button id="btn-fix-volume" class="w-full py-2.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,122,26,0.4)] transition-all">
             <span class="material-symbols-outlined text-[16px]">verified</span>
             <span id="btn-fix-text">FIJAR VOLUMEN [BARRA ESPACIADORA]</span>
+          </button>
+
+          <!-- Herramienta de Extracción / Sustracción Volumétrica CSG -->
+          <button id="btn-extract-csg" type="button" class="w-full py-2 px-2 rounded bg-[#1e2027] hover:bg-red-950/40 text-on-surface hover:text-red-300 border border-[#3d2f26]/60 transition-all font-mono text-xs flex items-center justify-center gap-1.5 shadow-sm" title="Sustrae esta forma de otro volumen con el que intercepte para crear huecos o vacíos">
+            <span class="material-symbols-outlined text-[15px] text-red-400">content_cut</span>
+            <span id="btn-extract-text">SUSTRAER / EXTRAER DE OTRO VOLUMEN</span>
           </button>
         </div>
 
@@ -430,6 +453,23 @@
 
   </div>
 
+  <!-- ==================== MOTOR CSG EMBEBIDO (SUSTRACCIÓN BOOLEANA) ==================== -->
+  <script>
+    var CSG = (function() {
+      var T = THREE.BufferAttribute, V = THREE.BufferGeometry, L = THREE.Matrix3, j = THREE.Matrix4, K = THREE.Mesh, q = THREE.Vector3, R = THREE.Vector3;
+      var P = class { constructor(t) { this.top = 0; this.array = new Float32Array(t); } write(t) { this.array[this.top++] = t.x; this.array[this.top++] = t.y; this.array[this.top++] = t.z; } };
+      var A = class { constructor(t) { this.top = 0; this.array = new Float32Array(t); } write(t) { this.array[this.top++] = t.x; this.array[this.top++] = t.y; } };
+      var x = class n { constructor(t) { this.plane = null; this.front = null; this.back = null; this.polygons = []; t && this.build(t); } clone() { let t = new n; return t.plane = this.plane && this.plane.clone(), t.front = this.front && this.front.clone(), t.back = this.back && this.back.clone(), t.polygons = this.polygons.map(o => o.clone()), t; } invert() { for (let o = 0; o < this.polygons.length; o++) this.polygons[o].flip(); this.plane && this.plane.flip(), this.front && this.front.invert(), this.back && this.back.invert(); let t = this.front; this.front = this.back, this.back = t; } clipPolygons(t) { if (!this.plane) return t.slice(); let o = new Array, s = new Array; for (let r = 0; r < t.length; r++) this.plane.splitPolygon(t[r], o, s, o, s); return this.front && (o = this.front.clipPolygons(o)), this.back ? s = this.back.clipPolygons(s) : s = [], o.concat(s); } clipTo(t) { this.polygons = t.clipPolygons(this.polygons), this.front && this.front.clipTo(t), this.back && this.back.clipTo(t); } allPolygons() { let t = this.polygons.slice(); return this.front && (t = t.concat(this.front.allPolygons())), this.back && (t = t.concat(this.back.allPolygons())), t; } build(t) { if (!t.length) return; this.plane || (this.plane = t[0].plane.clone()); let o = [], s = []; for (let r = 0; r < t.length; r++) this.plane.splitPolygon(t[r], this.polygons, this.polygons, o, s); o.length && (this.front || (this.front = new n), this.front.build(o)), s.length && (this.back || (this.back = new n), this.back.build(s)); } };
+      var g = class n { constructor(t = 0, o = 0, s = 0) { this.x = t; this.y = o; this.z = s; } copy(t) { return this.x = t.x, this.y = t.y, this.z = t.z, this; } clone() { return new n(this.x, this.y, this.z); } negate() { return this.x *= -1, this.y *= -1, this.z *= -1, this; } add(t) { return this.x += t.x, this.y += t.y, this.z += t.z, this; } sub(t) { return this.x -= t.x, this.y -= t.y, this.z -= t.z, this; } times(t) { return this.x *= t, this.y *= t, this.z *= t, this; } dividedBy(t) { return this.x /= t, this.y /= t, this.z /= t, this; } lerp(t, o) { return this.add(new n().copy(t).sub(this).times(o)); } unit() { return this.dividedBy(this.length()); } length() { return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2)); } normalize() { return this.unit(); } cross(t) { let o = this.clone(), s = o.x, r = o.y, e = o.z, c = t.x, m = t.y, u = t.z; return this.x = r * u - e * m, this.y = e * c - s * u, this.z = s * m - r * c, this; } dot(t) { return this.x * t.x + this.y * t.y + this.z * t.z; } toVector3() { return new R(this.x, this.y, this.z); } };
+      var z = class n { constructor(t, o) { this.normal = t; this.w = o; } clone() { return new n(this.normal.clone(), this.w); } flip() { this.normal.negate(), this.w = -this.w; } splitPolygon(t, o, s, r, e) { let f = 0, p = []; for (let w = 0; w < t.vertices.length; w++) { let l = this.normal.dot(t.vertices[w].pos) - this.w, i = l < -n.EPSILON ? 2 : l > n.EPSILON ? 1 : 0; f |= i, p.push(i); } switch (f) { case 0: (this.normal.dot(t.plane.normal) > 0 ? o : s).push(t); break; case 1: r.push(t); break; case 2: e.push(t); break; case 3: { let w = [], l = []; for (let i = 0; i < t.vertices.length; i++) { let h = (i + 1) % t.vertices.length, y = p[i], d = p[h], v = t.vertices[i], M = t.vertices[h]; if (y != 2 && w.push(v), y != 1 && l.push(y != 2 ? v.clone() : v), (y | d) == 3) { let B = (this.w - this.normal.dot(v.pos)) / this.normal.dot(new g().copy(M.pos).sub(v.pos)), N = v.interpolate(M, B); w.push(N), l.push(N.clone()); } } w.length >= 3 && r.push(new b(w, t.shared)), l.length >= 3 && e.push(new b(l, t.shared)); break; } } } static fromPoints(t, o, s) { let r = new g().copy(o).sub(t).cross(new g().copy(s).sub(t)).normalize(); return new n(r.clone(), r.dot(t)); } };
+      z.EPSILON = 1e-5;
+      var b = class n { constructor(t, o) { this.vertices = t; this.shared = o; this.plane = z.fromPoints(t[0].pos, t[1].pos, t[2].pos); } clone() { return new n(this.vertices.map(t => t.clone()), this.shared); } flip() { this.vertices.reverse().map(t => t.flip()), this.plane.flip(); } };
+      var k = class n { constructor(t, o, s, r) { this.pos = new g().copy(t); this.normal = new g().copy(o); this.uv = new g().copy(s); this.uv.z = 0; r && (this.color = new g().copy(r)); } clone() { return new n(this.pos, this.normal, this.uv, this.color); } flip() { this.normal.negate(); } interpolate(t, o) { return new n(this.pos.clone().lerp(t.pos, o), this.normal.clone().lerp(t.normal, o), this.uv.clone().lerp(t.uv, o), this.color && t.color && this.color.clone().lerp(t.color, o)); } };
+      var G = class n { constructor() { this.polygons = []; } static fromPolygons(t) { let o = new n; return o.polygons = t, o; } static fromGeometry(t, o) { let s = [], r = t.attributes.position, e = t.attributes.normal, c = t.attributes.uv, m = t.attributes.color, u = t.groups, a; if (t.index) a = t.index.array; else { a = new Uint16Array(r.array.length / r.itemSize | 0); for (let p = 0; p < a.length; p++) a[p] = p; } let f = a.length / 3 | 0; s = new Array(f); for (let p = 0, w = 0, l = a.length; p < l; p += 3, w++) { let i = new Array(3); for (let h = 0; h < 3; h++) { let y = a[p + h], d = y * 3, v = y * 2, M = r.array[d], B = r.array[d + 1], N = r.array[d + 2], O = e.array[d], C = e.array[d + 1], S = e.array[d + 2], F = c?.array[v], I = c?.array[v + 1]; i[h] = new k(new g(M, B, N), new g(O, C, S), new g(F, I, 0), m && new g(m.array[d], m.array[d + 1], m.array[d + 2])); } if (o === void 0 && u && u.length > 0) for (let h of u) p >= h.start && p < h.start + h.count && (s[w] = new b(i, h.materialIndex)); else s[w] = new b(i, o); } return n.fromPolygons(s.filter(p => !Number.isNaN(p.plane.normal.x))); } static toGeometry(t, o) { let s = 0, r = t.polygons; for (let l of r) s += l.vertices.length - 2; let e = new V, c = new P(s * 3 * 3), m = new P(s * 3 * 3), u = new A(s * 2 * 3), a, f = [], p = []; for (let l of r) { let i = l.vertices, h = i.length; l.shared !== void 0 && (f[l.shared] || (f[l.shared] = [])), h && i[0].color !== void 0 && (a || (a = new P(s * 3 * 3))); for (let y = 3; y <= h; y++) (l.shared === void 0 ? p : f[l.shared]).push(c.top / 3, c.top / 3 + 1, c.top / 3 + 2), c.write(i[0].pos), c.write(i[y - 2].pos), c.write(i[y - 1].pos), m.write(i[0].normal), m.write(i[y - 2].normal), m.write(i[y - 1].normal), u && (u.write(i[0].uv), u.write(i[y - 2].uv), u.write(i[y - 1].uv)), a && (a.write(i[0].color), a.write(i[y - 2].color), a.write(i[y - 1].color)); } e.setAttribute("position", new T(c.array, 3)), e.setAttribute("normal", new T(m.array, 3)), u && e.setAttribute("uv", new T(u.array, 2)), a && e.setAttribute("color", new T(a.array, 3)); for (let l = 0; l < f.length; l++) f[l] === void 0 && (f[l] = []); if (f.length) { let l = [], i = 0; for (let h = 0; h < f.length; h++) e.addGroup(i, f[h].length, h), i += f[h].length, l = l.concat(f[h]); e.addGroup(i, p.length, f.length), l = l.concat(p), e.setIndex(l); } let w = new j().copy(o).invert(); return e.applyMatrix4(w), e.computeBoundingSphere(), e.computeBoundingBox(), e; } static fromMesh(t, o) { t.updateMatrix(); let s = n.fromGeometry(t.geometry, o), r = new q, e = new L; e.getNormalMatrix(t.matrix); for (let c = 0; c < s.polygons.length; c++) { let m = s.polygons[c]; for (let u = 0; u < m.vertices.length; u++) { let a = m.vertices[u]; a.pos.copy(r.copy(a.pos.toVector3()).applyMatrix4(t.matrix)), a.normal.copy(r.copy(a.normal.toVector3()).applyMatrix3(e)); } } return s; } static toMesh(t, o, s) { let r = n.toGeometry(t, o), e = new K(r, s); return e.matrix.copy(o), e.matrix.decompose(e.position, e.quaternion, e.scale), e.rotation.setFromQuaternion(e.quaternion), e.updateMatrixWorld(), e.castShadow = e.receiveShadow = !0, e; } static union(t, o) { t.updateMatrix(); o.updateMatrix(); let s = n.fromMesh(t), r = n.fromMesh(o); return n.toMesh(s.union(r), t.matrix, t.material); } static subtract(t, o) { t.updateMatrix(); o.updateMatrix(); let s = n.fromMesh(t), r = n.fromMesh(o); return n.toMesh(s.subtract(r), t.matrix, t.material); } static intersect(t, o) { t.updateMatrix(); o.updateMatrix(); let s = n.fromMesh(t), r = n.fromMesh(o); return n.toMesh(s.intersect(r), t.matrix, t.material); } clone() { let t = new n; return t.polygons = this.polygons.map(o => o.clone()).filter(o => Number.isFinite(o.plane.w)), t; } toPolygons() { return this.polygons; } union(t) { let o = new x(this.clone().polygons), s = new x(t.clone().polygons); return o.clipTo(s), s.clipTo(o), s.invert(), s.clipTo(o), s.invert(), o.build(s.allPolygons()), n.fromPolygons(o.allPolygons()); } subtract(t) { let o = new x(this.clone().polygons), s = new x(t.clone().polygons); return o.invert(), o.clipTo(s), s.clipTo(o), s.invert(), s.clipTo(o), s.invert(), o.build(s.allPolygons()), o.invert(), n.fromPolygons(o.allPolygons()); } intersect(t) { let o = new x(this.clone().polygons), s = new x(t.clone().polygons); return o.invert(), s.clipTo(o), s.invert(), o.clipTo(s), s.clipTo(o), o.build(s.allPolygons()), o.invert(), n.fromPolygons(o.allPolygons()); } inverse() { let t = this.clone(); for (let o of t.polygons) o.flip(); return t; } toMesh(t, o) { return n.toMesh(this, t, o); } toGeometry(t) { return n.toGeometry(this, t); } };
+      return G;
+    })();
+  </script>
+
   <!-- ==================== SCRIPT PRINCIPAL THREE.JS & LÓGICA PRD ==================== -->
   <script>
     // --- ESTADO GLOBAL DE LA APLICACIÓN ---
@@ -443,12 +483,15 @@
       activeShape: 'box',
       activeColor: '#ffb68e',
       activeDims: { width: 12, depth: 10, height: 9 },
+      activeElevation: 0,
       activePos: { x: 0, z: 0 },
-      placedVolumes: [], // { id, shape, color, width, depth, height, x, z, mesh, edges }
+      placedVolumes: [], // { id, shape, color, width, depth, height, elevation, x, z, mesh, edges }
       selectedVolume: null,
       history: [],
       volCounter: 1
     };
+
+    let isExtractionMode = false;
 
     // --- CONFIGURACIÓN THREE.JS ---
     const container = document.getElementById('viewport-container');
@@ -540,7 +583,6 @@
       const baseColor = new THREE.Color(windColors[i % windColors.length]);
 
       for (let j = 0; j < trailLength; j++) {
-        // La cabeza es brillante y la cola se desvanece
         const alpha = Math.pow(1.0 - (j / trailLength), 1.5);
         colors[j * 3] = baseColor.r * alpha;
         colors[j * 3 + 1] = baseColor.g * alpha;
@@ -636,7 +678,8 @@
       activeMesh = new THREE.Mesh(geom, mat);
       activeMesh.castShadow = true;
       activeMesh.receiveShadow = true;
-      activeMesh.position.set(state.activePos.x, state.activeDims.height / 2, state.activePos.z);
+      const posY = state.activeElevation + (state.activeDims.height / 2);
+      activeMesh.position.set(state.activePos.x, posY, state.activePos.z);
       scene.add(activeMesh);
 
       const edgesGeom = new THREE.EdgesGeometry(geom);
@@ -644,6 +687,14 @@
       activeMesh.add(activeEdges);
 
       updateMetrics();
+    }
+
+    function updateElevacionLabel(val) {
+      const elv = parseFloat(val);
+      let desc = '(Suelo)';
+      if (elv > 0) desc = `(+${elv}m nivel)`;
+      if (elv < 0) desc = `(${elv}m sótano)`;
+      document.getElementById('val-elevacion').textContent = `${elv.toFixed(1)} m ${desc}`;
     }
 
     // --- SELECCIÓN Y DESELECCIÓN DE VOLÚMENES ---
@@ -674,6 +725,10 @@
       const floors = Math.round(vol.height / 3.0);
       document.getElementById('val-alto').textContent = `${vol.height} m (${floors} plantas)`;
 
+      const elev = vol.elevation !== undefined ? vol.elevation : 0;
+      document.getElementById('slider-elevacion').value = elev;
+      updateElevacionLabel(elev);
+
       document.getElementById('input-pos-x').value = vol.x;
       document.getElementById('input-pos-z').value = vol.z;
 
@@ -687,6 +742,7 @@
     function deselectVolume() {
       state.selectedVolume = null;
       selectionBox.visible = false;
+      resetExtractButton();
 
       document.getElementById('panel-title').textContent = `// VOLUMEN EN CURSO`;
       document.getElementById('panel-title').className = "font-mono text-xs text-primary-container font-bold uppercase tracking-wider";
@@ -703,6 +759,10 @@
       document.getElementById('val-fondo').textContent = `${state.activeDims.depth} m`;
       document.getElementById('slider-alto').value = state.activeDims.height;
       document.getElementById('val-alto').textContent = `${state.activeDims.height} m (${Math.round(state.activeDims.height/3)} plantas)`;
+      
+      document.getElementById('slider-elevacion').value = state.activeElevation;
+      updateElevacionLabel(state.activeElevation);
+
       document.getElementById('input-pos-x').value = state.activePos.x;
       document.getElementById('input-pos-z').value = state.activePos.z;
 
@@ -717,7 +777,8 @@
       const newGeom = createGeometry(vol.shape, vol.width, vol.depth, vol.height);
       vol.mesh.geometry.dispose();
       vol.mesh.geometry = newGeom;
-      vol.mesh.position.set(vol.x, vol.height / 2, vol.z);
+      const elev = vol.elevation !== undefined ? vol.elevation : 0;
+      vol.mesh.position.set(vol.x, elev + (vol.height / 2), vol.z);
 
       if (vol.edges) {
         vol.edges.geometry.dispose();
@@ -767,13 +828,14 @@
       }
     }
 
-    // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (SÓLIDO) ---
+    // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (SÓLIDO CON ELEVACIÓN) ---
     function fixCurrentVolume() {
       const shape = state.selectedVolume ? state.selectedVolume.shape : state.activeShape;
       const color = state.selectedVolume ? state.selectedVolume.color : state.activeColor;
       const w = state.selectedVolume ? state.selectedVolume.width : state.activeDims.width;
       const d = state.selectedVolume ? state.selectedVolume.depth : state.activeDims.depth;
       const h = state.selectedVolume ? state.selectedVolume.height : state.activeDims.height;
+      const elev = state.selectedVolume ? (state.selectedVolume.elevation || 0) : state.activeElevation;
       const posX = state.selectedVolume ? state.selectedVolume.x + 3 : state.activePos.x;
       const posZ = state.selectedVolume ? state.selectedVolume.z + 3 : state.activePos.z;
 
@@ -782,13 +844,14 @@
       const mat = new THREE.MeshStandardMaterial({
         color: color,
         roughness: 0.45,
-        metalness: 0.05
+        metalness: 0.05,
+        side: THREE.DoubleSide
       });
 
       const mesh = new THREE.Mesh(geom, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      mesh.position.set(posX, h / 2, posZ);
+      mesh.position.set(posX, elev + (h / 2), posZ);
       
       const edgesGeom = new THREE.EdgesGeometry(geom);
       const edges = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x584236, linewidth: 1.5 }));
@@ -803,6 +866,7 @@
         width: w,
         depth: d,
         height: h,
+        elevation: elev,
         x: posX,
         z: posZ,
         mesh: mesh,
@@ -828,6 +892,74 @@
       document.getElementById('active-vol-id').textContent = `#VOL-${String(state.volCounter).padStart(2, '0')}`;
 
       updateActiveVolumeMesh();
+    }
+
+    // --- HERRAMIENTA DE EXTRACCIÓN / SUSTRACCIÓN CSG ---
+    function resetExtractButton() {
+      isExtractionMode = false;
+      const btn = document.getElementById('btn-extract-csg');
+      const text = document.getElementById('btn-extract-text');
+      if (btn && text) {
+        btn.className = 'w-full py-2 px-2 rounded bg-[#1e2027] hover:bg-red-950/40 text-on-surface hover:text-red-300 border border-[#3d2f26]/60 transition-all font-mono text-xs flex items-center justify-center gap-1.5 shadow-sm';
+        text.innerHTML = '<span class="material-symbols-outlined text-[15px] text-red-400">content_cut</span><span>SUSTRAER / EXTRAER DE OTRO VOLUMEN</span>';
+      }
+    }
+
+    function toggleExtractionMode() {
+      if (state.placedVolumes.length === 0) {
+        showToast('Fija primero al menos un volumen base sobre el cual realizar el corte');
+        return;
+      }
+      if (isExtractionMode) {
+        resetExtractButton();
+        showToast('Modo sustracción cancelado');
+        return;
+      }
+
+      isExtractionMode = true;
+      const btn = document.getElementById('btn-extract-csg');
+      const text = document.getElementById('btn-extract-text');
+      btn.className = 'w-full py-2 px-2 rounded bg-red-950/70 text-red-300 border border-red-500/80 transition-all font-mono text-xs flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse';
+      text.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 animate-ping"></span><span class="font-bold">Haz clic en el volumen a vaciar... [Cancelar]</span>';
+      showToast('Haz clic sobre el volumen del cual deseas extraer / vaciar este corte');
+    }
+
+    function executeCSGSubtraction(targetVol, cutterVolume, cutterMesh) {
+      try {
+        showToast('Procesando extracción volumétrica...');
+        targetVol.mesh.updateMatrixWorld(true);
+        cutterMesh.updateMatrixWorld(true);
+
+        const subtractedMesh = CSG.subtract(targetVol.mesh, cutterMesh);
+        subtractedMesh.material = targetVol.mesh.material.clone();
+        subtractedMesh.material.side = THREE.DoubleSide;
+        subtractedMesh.castShadow = true;
+        subtractedMesh.receiveShadow = true;
+        subtractedMesh.userData = { id: targetVol.id };
+
+        const edgesGeom = new THREE.EdgesGeometry(subtractedMesh.geometry, 25);
+        const edges = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x584236, linewidth: 1.5 }));
+        subtractedMesh.add(edges);
+
+        scene.remove(targetVol.mesh);
+        targetVol.mesh = subtractedMesh;
+        targetVol.edges = edges;
+        scene.add(subtractedMesh);
+
+        if (cutterVolume) {
+          scene.remove(cutterVolume.mesh);
+          state.placedVolumes = state.placedVolumes.filter(v => v.id !== cutterVolume.id);
+          deselectVolume();
+        }
+
+        showToast(`✓ Extracción completada en #${targetVol.id} (Vacío creado)`);
+        updateMetrics();
+      } catch (err) {
+        console.error('CSG Subtraction error:', err);
+        showToast('Asegúrate de que los volúmenes se intercepten para cortar');
+      } finally {
+        resetExtractButton();
+      }
     }
 
     // --- DESHACER (UNDO) ---
@@ -856,9 +988,12 @@
         state.placedVolumes = [];
         state.history = [];
         state.volCounter = 1;
+        state.activeElevation = 0;
         state.activePos = { x: 0, z: 0 };
         document.getElementById('input-pos-x').value = 0;
         document.getElementById('input-pos-z').value = 0;
+        document.getElementById('slider-elevacion').value = 0;
+        updateElevacionLabel(0);
         document.getElementById('active-vol-id').textContent = '#VOL-01';
         updateActiveVolumeMesh();
         showToast('Lienzo restablecido con éxito');
@@ -951,7 +1086,7 @@
       NO: { x: 0.7, z: -0.7 }
     };
 
-    // --- SELECCIÓN POR CLICK EN MODELO 3D (RAYCASTING CORREGIDO) ---
+    // --- SELECCIÓN Y SUSTRACCIÓN POR CLICK (RAYCASTING CORREGIDO) ---
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let pointerDownCoord = { x: 0, y: 0 };
@@ -970,6 +1105,31 @@
 
       raycaster.setFromCamera(mouse, camera);
 
+      // CASO A: MODO SUSTRACCIÓN / EXTRACCIÓN ACTIVO
+      if (isExtractionMode) {
+        const cutterVol = state.selectedVolume;
+        const cutterMesh = cutterVol ? cutterVol.mesh : activeMesh;
+
+        // Candidatos objetivos (excluyendo la pieza cortadora)
+        const candidates = state.placedVolumes.filter(v => !cutterVol || v.id !== cutterVol.id);
+        const candidateMeshes = candidates.map(v => v.mesh);
+        const hits = raycaster.intersectObjects(candidateMeshes, false);
+
+        if (hits.length > 0) {
+          const hitMesh = hits[0].object;
+          const target = candidates.find(v => v.mesh === hitMesh);
+          if (target) {
+            executeCSGSubtraction(target, cutterVol, cutterMesh);
+            return;
+          }
+        } else {
+          resetExtractButton();
+          showToast('Sustracción cancelada');
+          return;
+        }
+      }
+
+      // CASO B: SELECCIÓN NORMAL DE VOLÚMENES
       const placedMeshes = state.placedVolumes.map(v => v.mesh);
       const intersects = raycaster.intersectObjects(placedMeshes, false);
 
@@ -1008,7 +1168,8 @@
             z: state.activePos.z,
             width: state.activeDims.width,
             depth: state.activeDims.depth,
-            height: state.activeDims.height
+            height: state.activeDims.height,
+            elevation: state.activeElevation
           });
         }
 
@@ -1022,7 +1183,8 @@
           for (let v of allVols) {
             const halfW = (v.width / 2) + 2.5;
             const halfD = (v.depth / 2) + 2.5;
-            const topY = v.height + 2.0;
+            const elev = v.elevation !== undefined ? v.elevation : 0;
+            const topY = elev + v.height + 2.0;
 
             const dx = Math.abs(st.pos.x - v.x);
             const dz = Math.abs(st.pos.z - v.z);
@@ -1074,6 +1236,7 @@
       const sAncho = document.getElementById('slider-ancho');
       const sFondo = document.getElementById('slider-fondo');
       const sAlto = document.getElementById('slider-alto');
+      const sElev = document.getElementById('slider-elevacion');
 
       sAncho.addEventListener('input', (e) => {
         const val = parseFloat(e.target.value);
@@ -1108,6 +1271,18 @@
           updateSelectedVolumeGeometry();
         } else {
           state.activeDims.height = val;
+          updateActiveVolumeMesh();
+        }
+      });
+
+      sElev.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        updateElevacionLabel(val);
+        if (state.selectedVolume) {
+          state.selectedVolume.elevation = val;
+          updateSelectedVolumeGeometry();
+        } else {
+          state.activeElevation = val;
           updateActiveVolumeMesh();
         }
       });
@@ -1201,7 +1376,6 @@
           : 'flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#1e2027] text-outline font-mono text-xs border border-[#3d2f26]/30';
       });
 
-      // Toggle Rejilla y Ejes (para ver solo los volúmenes)
       const btnGrid = document.getElementById('toggle-grid');
       btnGrid.addEventListener('click', () => {
         state.gridActive = !state.gridActive;
@@ -1216,6 +1390,7 @@
 
       document.getElementById('btn-fix-volume').addEventListener('click', fixCurrentVolume);
       document.getElementById('btn-deselect').addEventListener('click', deselectVolume);
+      document.getElementById('btn-extract-csg').addEventListener('click', toggleExtractionMode);
 
       document.getElementById('btn-undo').addEventListener('click', undoLast);
       document.getElementById('btn-reset-all').addEventListener('click', resetAll);
@@ -1253,7 +1428,6 @@
 
       // Captura de imagen en alta resolución con TODOS los volúmenes
       document.getElementById('btn-screenshot').addEventListener('click', () => {
-        // Guardar estados previos
         const prevGrid = grid.visible;
         const prevCompass = compassGroup.visible;
         const prevSolarArc = solarArc.visible;
@@ -1262,7 +1436,6 @@
         const prevWind = windGroup.visible;
         const prevPixelRatio = renderer.getPixelRatio();
 
-        // Ocultar solo elementos auxiliares de interfaz (retícula, brújula, sol 3D, líneas de viento)
         grid.visible = false;
         compassGroup.visible = false;
         solarArc.visible = false;
@@ -1270,7 +1443,6 @@
         selectionBox.visible = false;
         windGroup.visible = false;
 
-        // ASEGURAR QUE ABSOLUTAMENTE TODOS LOS VOLÚMENES ESTÉN VISIBLES
         state.placedVolumes.forEach(v => {
           v.mesh.visible = true;
         });
@@ -1278,13 +1450,11 @@
           activeMesh.visible = true;
         }
 
-        // RENDERIZAR EN ULTRA ALTA DEFINICIÓN (3X NITIDEZ Y MÁXIMA CALIDAD)
         renderer.setPixelRatio(3.0);
         renderer.render(scene, camera);
 
         const dataURL = canvas.toDataURL('image/png', 1.0);
 
-        // Restaurar estado visual y resolución normal
         renderer.setPixelRatio(prevPixelRatio);
         grid.visible = prevGrid;
         compassGroup.visible = prevCompass;
@@ -1345,6 +1515,32 @@
           } else {
             state.activePos.z += 1;
             document.getElementById('input-pos-z').value = state.activePos.z;
+            updateActiveVolumeMesh();
+          }
+        } else if (e.key === 'q' || e.key === 'Q') {
+          // Bajar nivel de elevación
+          if (state.selectedVolume) {
+            state.selectedVolume.elevation = Math.max(-6, (state.selectedVolume.elevation || 0) - 1);
+            document.getElementById('slider-elevacion').value = state.selectedVolume.elevation;
+            updateElevacionLabel(state.selectedVolume.elevation);
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activeElevation = Math.max(-6, state.activeElevation - 1);
+            document.getElementById('slider-elevacion').value = state.activeElevation;
+            updateElevacionLabel(state.activeElevation);
+            updateActiveVolumeMesh();
+          }
+        } else if (e.key === 'e' || e.key === 'E') {
+          // Elevar nivel en eje Y
+          if (state.selectedVolume) {
+            state.selectedVolume.elevation = Math.min(30, (state.selectedVolume.elevation || 0) + 1);
+            document.getElementById('slider-elevacion').value = state.selectedVolume.elevation;
+            updateElevacionLabel(state.selectedVolume.elevation);
+            updateSelectedVolumeGeometry();
+          } else {
+            state.activeElevation = Math.min(30, state.activeElevation + 1);
+            document.getElementById('slider-elevacion').value = state.activeElevation;
+            updateElevacionLabel(state.activeElevation);
             updateActiveVolumeMesh();
           }
         } else if (e.key === 'r' || e.key === 'R') {
