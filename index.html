@@ -106,11 +106,6 @@
 
       <div class="h-4 w-[1px] bg-[#3d2f26]/60"></div>
 
-      <button id="btn-export-report" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1e2027] hover:bg-[#252830] text-on-surface hover:text-primary transition-all border border-[#3d2f26]/60 text-xs font-mono" title="Descargar resumen de métricas">
-        <span class="material-symbols-outlined text-[15px]">file_download</span>
-        <span>Reporte Bioclimático</span>
-      </button>
-
       <button id="btn-screenshot" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary-container hover:bg-[#ff8c33] text-surface font-semibold transition-all shadow-[0_0_15px_rgba(255,122,26,0.4)] text-xs font-mono" title="Tomar captura del modelo">
         <span class="material-symbols-outlined text-[15px]">photo_camera</span>
         <span>Captura Asoleamiento</span>
@@ -297,10 +292,34 @@
                 <span class="material-symbols-outlined text-[20px]">change_history</span>
                 <span class="font-mono text-[9px] mt-1">Cuña</span>
               </button>
-              <button data-shape="lshape" class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30">
-                <span class="material-symbols-outlined text-[20px]">polyline</span>
-                <span class="font-mono text-[9px] mt-1">Torre L</span>
+              <button data-shape="sphere" class="flex flex-col items-center justify-center p-2 rounded bg-[#111317] text-on-surface-variant hover:text-on-surface hover:bg-[#1e2027] transition-colors group border border-[#3d2f26]/30">
+                <span class="material-symbols-outlined text-[20px]">circle</span>
+                <span class="font-mono text-[9px] mt-1">Esfera</span>
               </button>
+            </div>
+          </div>
+
+          <!-- Selector de Color del Volumen -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span class="text-on-surface-variant">Color del Volumen:</span>
+              <span id="label-color-val" class="text-primary font-bold">#FFB68E</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div id="color-palette" class="flex items-center gap-1.5 flex-1 flex-wrap">
+                <button type="button" data-color="#ffb68e" class="w-6 h-6 rounded-full border-2 border-white shadow-md transition-transform hover:scale-110" style="background-color: #ffb68e;" title="Terracota Claro"></button>
+                <button type="button" data-color="#ffd799" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #ffd799;" title="Arena / Madera"></button>
+                <button type="button" data-color="#e3e2e6" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #e3e2e6;" title="Blanco Hormigón"></button>
+                <button type="button" data-color="#ff7a1a" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #ff7a1a;" title="Naranja Arcilla"></button>
+                <button type="button" data-color="#26dcdd" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #26dcdd;" title="Turquesa Bioclimático"></button>
+                <button type="button" data-color="#a0522d" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #a0522d;" title="Ladrillo Rústico"></button>
+                <button type="button" data-color="#4a5568" class="w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110" style="background-color: #4a5568;" title="Pizarra Gris"></button>
+              </div>
+              <label class="cursor-pointer flex items-center gap-1 px-2 py-1 rounded bg-[#1e2027] border border-[#3d2f26]/60 text-[10px] font-mono text-on-surface hover:text-primary transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[14px]">palette</span>
+                <span>Más</span>
+                <input id="input-custom-color" type="color" value="#ffb68e" class="sr-only"/>
+              </label>
             </div>
           </div>
 
@@ -416,10 +435,11 @@
       hour: 12.0,
       windDir: 'NE',
       activeShape: 'box',
+      activeColor: '#ffb68e',
       activeDims: { width: 12, depth: 10, height: 9 },
       activePos: { x: 0, z: 0 },
-      placedVolumes: [], // { id, shape, width, depth, height, x, z, mesh, edges }
-      selectedVolume: null, // Volumen seleccionado actualmente
+      placedVolumes: [], // { id, shape, color, width, depth, height, x, z, mesh, edges }
+      selectedVolume: null,
       history: [],
       volCounter: 1
     };
@@ -522,14 +542,16 @@
     selectionBox.visible = false;
     scene.add(selectionBox);
 
-    // --- VOLUMEN ACTIVO (EN CURSO) ---
-    let activeMesh = null;
-    let activeEdges = null;
-
+    // --- CREACIÓN DE GEOMETRÍAS (SÓLIDAS) ---
     function createGeometry(shape, w, d, h) {
       switch (shape) {
         case 'cylinder':
-          return new THREE.CylinderGeometry(Math.min(w, d) / 2, Math.min(w, d) / 2, h, 24);
+          return new THREE.CylinderGeometry(Math.min(w, d) / 2, Math.min(w, d) / 2, h, 32);
+        case 'sphere': {
+          const geom = new THREE.SphereGeometry(1, 32, 24);
+          geom.scale(w / 2, h / 2, d / 2);
+          return geom;
+        }
         case 'wedge': {
           const geom = new THREE.BoxGeometry(w, h, d);
           const pos = geom.attributes.position;
@@ -541,14 +563,15 @@
           geom.computeVertexNormals();
           return geom;
         }
-        case 'lshape': {
-          return new THREE.BoxGeometry(w, h, d);
-        }
         case 'box':
         default:
           return new THREE.BoxGeometry(w, h, d);
       }
     }
+
+    // --- VOLUMEN ACTIVO (SÓLIDO SIN TRANSPARENCIA) ---
+    let activeMesh = null;
+    let activeEdges = null;
 
     function updateActiveVolumeMesh() {
       if (activeMesh) {
@@ -558,11 +581,9 @@
 
       const geom = createGeometry(state.activeShape, state.activeDims.width, state.activeDims.depth, state.activeDims.height);
       const mat = new THREE.MeshStandardMaterial({
-        color: 0xffb68e,
+        color: state.activeColor,
         roughness: 0.35,
-        metalness: 0.05,
-        transparent: true,
-        opacity: 0.95
+        metalness: 0.05
       });
 
       activeMesh = new THREE.Mesh(geom, mat);
@@ -609,8 +630,9 @@
       document.getElementById('input-pos-x').value = vol.x;
       document.getElementById('input-pos-z').value = vol.z;
 
-      // Actualizar botón de forma activa
+      // Sincronizar color y forma
       updateShapeButtonsUI(vol.shape);
+      updateColorUI(vol.color);
 
       showToast(`Seleccionado: #${vol.id} (${vol.width}x${vol.depth}x${vol.height}m)`);
     }
@@ -627,7 +649,7 @@
       document.getElementById('btn-deselect').classList.add('hidden');
       document.getElementById('btn-fix-text').textContent = 'FIJAR VOLUMEN [BARRA ESPACIADORA]';
 
-      // Restaurar sliders a las medidas del nuevo volumen activo
+      // Restaurar valores del volumen activo
       document.getElementById('slider-ancho').value = state.activeDims.width;
       document.getElementById('val-ancho').textContent = `${state.activeDims.width} m`;
       document.getElementById('slider-fondo').value = state.activeDims.depth;
@@ -638,13 +660,13 @@
       document.getElementById('input-pos-z').value = state.activePos.z;
 
       updateShapeButtonsUI(state.activeShape);
+      updateColorUI(state.activeColor);
     }
 
     function updateSelectedVolumeGeometry() {
       if (!state.selectedVolume) return;
       const vol = state.selectedVolume;
 
-      // Reconstruir geometría del volumen seleccionado
       const newGeom = createGeometry(vol.shape, vol.width, vol.depth, vol.height);
       vol.mesh.geometry.dispose();
       vol.mesh.geometry = newGeom;
@@ -670,9 +692,38 @@
       });
     }
 
-    // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (PRD REQ) ---
+    function updateColorUI(hexColor) {
+      document.getElementById('label-color-val').textContent = hexColor.toUpperCase();
+      document.getElementById('label-color-val').style.color = hexColor;
+      document.getElementById('input-custom-color').value = hexColor;
+
+      const paletteBtns = document.querySelectorAll('#color-palette button');
+      paletteBtns.forEach(btn => {
+        if (btn.dataset.color.toLowerCase() === hexColor.toLowerCase()) {
+          btn.className = 'w-6 h-6 rounded-full border-2 border-white shadow-md transition-transform scale-110';
+        } else {
+          btn.className = 'w-6 h-6 rounded-full border border-[#3d2f26] shadow-md transition-transform hover:scale-110';
+        }
+      });
+    }
+
+    function applyColor(color) {
+      if (state.selectedVolume) {
+        state.selectedVolume.color = color;
+        state.selectedVolume.mesh.material.color.set(color);
+        updateColorUI(color);
+        showToast(`Color de #${state.selectedVolume.id} actualizado`);
+      } else {
+        state.activeColor = color;
+        if (activeMesh) activeMesh.material.color.set(color);
+        updateColorUI(color);
+      }
+    }
+
+    // --- FIJAR VOLUMEN CON BARRA ESPACIADORA (SÓLIDO) ---
     function fixCurrentVolume() {
       const shape = state.selectedVolume ? state.selectedVolume.shape : state.activeShape;
+      const color = state.selectedVolume ? state.selectedVolume.color : state.activeColor;
       const w = state.selectedVolume ? state.selectedVolume.width : state.activeDims.width;
       const d = state.selectedVolume ? state.selectedVolume.depth : state.activeDims.depth;
       const h = state.selectedVolume ? state.selectedVolume.height : state.activeDims.height;
@@ -680,11 +731,10 @@
       const posZ = state.selectedVolume ? state.selectedVolume.z + 3 : state.activePos.z;
 
       const geom = createGeometry(shape, w, d, h);
-      const palette = [0xffd799, 0xffb68e, 0xe3e2e6, 0xefc4b0];
-      const volColor = palette[state.placedVolumes.length % palette.length];
 
+      // Material completamente sólido sin transparencia
       const mat = new THREE.MeshStandardMaterial({
-        color: volColor,
+        color: color,
         roughness: 0.45,
         metalness: 0.05
       });
@@ -703,6 +753,7 @@
       const volRecord = {
         id: `VOL-${String(state.volCounter).padStart(2, '0')}`,
         shape: shape,
+        color: color,
         width: w,
         depth: d,
         height: h,
@@ -719,7 +770,6 @@
 
       showToast(`✓ Volumen #${volRecord.id} fijado. Simulación bioclimática integrada.`);
 
-      // Deseleccionar si había uno seleccionado para volver al nuevo activo
       deselectVolume();
 
       // Desplazar posición del siguiente volumen para no encimar
@@ -775,6 +825,7 @@
       const allVolumes = [...state.placedVolumes];
       if (activeMesh && !state.selectedVolume) {
         allVolumes.push({
+          shape: state.activeShape,
           width: state.activeDims.width,
           depth: state.activeDims.depth,
           height: state.activeDims.height
@@ -786,11 +837,26 @@
       let totalVolume = 0;
 
       allVolumes.forEach(v => {
-        const fp = v.width * v.depth;
+        let fp = v.width * v.depth;
+        let vol = fp * v.height;
+        if (v.shape === 'cylinder') {
+          const r = Math.min(v.width, v.depth) / 2;
+          fp = Math.PI * r * r;
+          vol = fp * v.height;
+        } else if (v.shape === 'sphere') {
+          const rx = v.width / 2;
+          const rz = v.depth / 2;
+          const ry = v.height / 2;
+          fp = Math.PI * rx * rz;
+          vol = (4 / 3) * Math.PI * rx * ry * rz;
+        } else if (v.shape === 'wedge') {
+          vol = (fp * v.height) / 2;
+        }
+
         const floors = Math.max(1, Math.round(v.height / 3.0));
         totalFootprint += fp;
         totalBuiltArea += fp * floors;
-        totalVolume += fp * v.height;
+        totalVolume += vol;
       });
 
       document.getElementById('metric-vol-count').textContent = allVolumes.length;
@@ -850,7 +916,6 @@
     });
 
     canvas.addEventListener('pointerup', (e) => {
-      // Si el usuario arrastró el mouse para rotar la cámara, no cambiar la selección
       const dist = Math.hypot(e.clientX - pointerDownCoord.x, e.clientY - pointerDownCoord.y);
       if (dist > 6) return;
 
@@ -871,7 +936,6 @@
           selectVolume(vol);
         }
       } else {
-        // Clic en el suelo vacío: deseleccionar
         if (state.selectedVolume) {
           deselectVolume();
           showToast('Selección desmarcada');
@@ -900,7 +964,6 @@
         windGeo.attributes.position.needsUpdate = true;
       }
 
-      // Mantener caja de selección alineada
       if (state.selectedVolume && selectionBox.visible) {
         selectionBox.setFromObject(state.selectedVolume.mesh);
       }
@@ -988,6 +1051,19 @@
         });
       });
 
+      // Paleta de colores predefinidos
+      const colorBtns = document.querySelectorAll('#color-palette button');
+      colorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyColor(btn.dataset.color);
+        });
+      });
+
+      // Color picker personalizado
+      document.getElementById('input-custom-color').addEventListener('input', (e) => {
+        applyColor(e.target.value);
+      });
+
       const sHora = document.getElementById('slider-hora');
       sHora.addEventListener('input', (e) => {
         state.hour = parseFloat(e.target.value);
@@ -1072,36 +1148,6 @@
         link.href = dataURL;
         link.click();
         showToast('Captura descargada con éxito');
-      });
-
-      document.getElementById('btn-export-report').addEventListener('click', () => {
-        const totalVols = state.placedVolumes.length + (state.selectedVolume ? 0 : 1);
-        const totalFP = document.getElementById('metric-footprint').textContent;
-        const totalConst = document.getElementById('metric-built-area').textContent;
-        const totalVol = document.getElementById('metric-total-vol').textContent;
-        const report = `========================================================\n` +
-                       `REPORTE BIOCLIMÁTICO - TRAZO MENTAL (GRUPO 29)\n` +
-                       `Fecha: ${new Date().toLocaleString()}\n` +
-                       `========================================================\n\n` +
-                       `1. MÉTRICAS GENERALES DE IMPLANTACIÓN:\n` +
-                       `   - Total Volúmenes Modelados: ${totalVols}\n` +
-                       `   - Huella en Planta: ${totalFP}\n` +
-                       `   - Superficie Construida Estimada: ${totalConst}\n` +
-                       `   - Volumen Total Edificado: ${totalVol}\n\n` +
-                       `2. CONDICIONANTES BIOCLIMÁTICAS:\n` +
-                       `   - Simulación Solar Activa: ${state.solarActive ? 'SÍ' : 'NO'}\n` +
-                       `   - Hora Analizada: ${document.getElementById('label-hora-live').textContent}\n` +
-                       `   - Ángulos Solares: ${document.getElementById('label-solar-angles').textContent}\n` +
-                       `   - Dirección Predominante del Viento: ${state.windDir}\n\n` +
-                       `Generado automáticamente desde Trazo Mental.\n` +
-                       `========================================================`;
-        
-        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.download = `Reporte_Bioclimatico_TrazoMental_${Date.now()}.txt`;
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        showToast('Reporte generado y descargado');
       });
 
       window.addEventListener('keydown', (e) => {
@@ -1205,6 +1251,7 @@
     // --- INICIALIZACIÓN ---
     window.addEventListener('DOMContentLoaded', () => {
       setupEventListeners();
+      updateColorUI(state.activeColor);
       updateSunPosition();
       updateActiveVolumeMesh();
       animate();
